@@ -1,12 +1,12 @@
 package com.example.myapplication
 
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
+import android.widget.ImageView
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,16 +17,29 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            MyApplicationTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android" + JNILoader().stringFromJNI(),
-                        modifier = Modifier.padding(innerPadding)
-                    )
+        setContentView(R.layout.main)
+        val imageView : ImageView = findViewById(R.id.src)
+        val src = Bitmap.createBitmap(250, 250, Bitmap.Config.ARGB_8888).apply {
+            for (x in 0 until width) {
+                for (y in 0 until height) {
+                    setPixel(x, y, Color.RED)
                 }
             }
         }
+        val copy: Bitmap = src.copy(Bitmap.Config.ARGB_8888, false)
+        JNILoader().stringFromJNI(copy)
+        imageView.setImageBitmap(copy)
+
+//        setContent {
+//            MyApplicationTheme {
+//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+//                    Greeting(
+//                        name = "Android" + JNILoader().stringFromJNI(),
+//                        modifier = Modifier.padding(innerPadding)
+//                    )
+//                }
+//            }
+//        }
     }
 }
 

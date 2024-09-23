@@ -4,8 +4,13 @@ cmake_minimum_required(VERSION 3.10.2)
 
 project("jnidemo")
 
-add_library(native-lib SHARED native-lib.cpp)
+add_library(native-lib SHARED native-lib.cpp EglHelper.cpp)
 
 find_library(lib_log log)
 
-target_link_libraries(native-lib ${lib_log})
+target_link_libraries(native-lib
+        android #AHardwareBuffer_allocate
+        jnigraphics #AndroidBitmap_getInfo
+        GLESv3 #glGenTextures
+        EGL
+        ${lib_log})

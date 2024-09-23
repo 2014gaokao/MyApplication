@@ -1,5 +1,7 @@
 package com.example.myapplication
 
+import android.graphics.Bitmap
+
 class JNILoader {
     companion object {
         init {
@@ -7,5 +9,5 @@ class JNILoader {
         }
     }
 
-    external fun stringFromJNI(): String
+    external fun stringFromJNI(copy : Bitmap): String
 }
