@@ -9,6 +9,12 @@
 
 #include <string>
 
+#ifndef LOG_TAG
+#define LOG_TAG "zcc c++"
+#endif
+#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define ALOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+
 class EglHelper {
 public:
     EGLDisplay mEglDisplay;
@@ -38,11 +44,6 @@ public:
     void makeCurrent();
     void makeNothingCurrent();
     void swapBuffers();
-    void test(int width, int height, void *pixels);
-    GLuint createInput(int width, int height);
-    GLuint createOutput(int width, int height);
-    void uploadData(int width, int height, void *plane0);
-    void downloadData(int width, int height, void *plane0);
 
 };
 
@@ -76,17 +77,13 @@ const GLfloat IDENTITY_MATRIX[16] = {
 "#version 300 es\n"             \
 "#extension GL_OES_EGL_image_external_essl3 : require\n" \
 "#extension GL_EXT_YUV_target : require\n"          \
-"#define texture2D texture\n"   \
 "#define gl_FragColor outColor\n"                  \
-"precision highp float;\n"                         \
-"precision highp int;\n"                             \
-"precision highp sampler3D;\n"                    \
 "in vec2 v_texCoord;\n"         \
 "uniform sampler2D sTexture;"                    \
 "out vec4 gl_FragColor;\n" \
 "void main()\n" \
 "{\n" \
-"	gl_FragColor = texture2D(sTexture, v_texCoord);\n"     \
+"	gl_FragColor = texture(sTexture, v_texCoord);\n"     \
 "   float average = 0.21 * gl_FragColor.r + 0.71 * gl_FragColor.g + 0.07 * gl_FragColor.b;\n" \
 "   gl_FragColor = vec4(average, average, average, 1.0);\n"                    \
 "}\n"

@@ -10,8 +10,6 @@
 #include <android/bitmap.h>
 
 
-#define LOG_TAG "zcc c++"
-
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz, jobject bmp) {
     std::string hello = "Hello from C++";
@@ -27,47 +25,31 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
 
     //jnigraphics
     if ((ret = AndroidBitmap_getInfo(env, bmp, &info)) < 0) {
-        //LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
-        __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "AndroidBitmap_getInfo() failed ! error=%d", ret);
+        ALOGD("AndroidBitmap_getInfo() failed ! error=%d", ret);
         return nullptr;
     }
 
     if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
-        //LOGE("Bitmap format is not RGBA_8888 !");
-        __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Bitmap format is not RGBA_8888 !");
+        ALOGD("Bitmap format is not RGBA_8888 !");
         return nullptr;
     }
-
-//    unsigned char *addrPtr;
-//    int result = AndroidBitmap_lockPixels(env, bmp, reinterpret_cast<void **>(&addrPtr));
-//    int length = info.width * info.height;
-//    for (int i = 0; i < length; ++i) {
-//        if (i % 4 == 0) {
-//            __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "====== %d", i / 4);
-//        }
-//        __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "value = %x", addrPtr[i]);
-//    }
 
     if ((ret = AndroidBitmap_lockPixels(env, bmp, &pixels)) < 0) {
-        //LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
-        __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "AndroidBitmap_lockPixels() failed ! error=%d", ret);
+        ALOGD("AndroidBitmap_lockPixels() failed ! error=%d", ret);
         return nullptr;
     }
 
-    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "width height %d %d\n", info.width, info.height);
+    ALOGD("width height %d %d\n", info.width, info.height);
 
-    int width = info.width;
-    int height = info.height;
+    uint32_t width = info.width;
+    uint32_t height = info.height;
 
-
-    AHardwareBuffer_Desc desc;
-    desc.format = AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
-    desc.height = height;
-    desc.width = width;
-    desc.layers = 1;
-    desc.rfu0 = 0;
-    desc.rfu1 = 0;
-    desc.usage = AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN | AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE;
+    AHardwareBuffer_Desc desc = {width, height,
+                                 1,
+                                 AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM,
+                                 AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN | AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE,
+                                 width,
+                                 0, 0};
     AHardwareBuffer *inBuffer;
     ret = AHardwareBuffer_allocate(&desc, &inBuffer);
 
@@ -76,7 +58,7 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
     memcpy(planes_info.planes[0].data, pixels, width * height * 4);
     ret = AHardwareBuffer_unlock(inBuffer, nullptr);
 
-    EGLint eglImageAttributes[] = {EGL_WIDTH, width, EGL_HEIGHT, height, EGL_NONE};
+    EGLint eglImageAttributes[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE};
     EGLClientBuffer clientBuf = eglGetNativeClientBufferANDROID(inBuffer);
     EGLImageKHR imageEGL = eglCreateImageKHR(eglHelper.mEglDisplay, EGL_NO_CONTEXT, EGL_NATIVE_BUFFER_ANDROID,
                                              clientBuf, reinterpret_cast<const EGLint *>(eglImageAttributes));
@@ -84,7 +66,7 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
     unsigned int fbo;
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
+    //https://learnopengl-cn.readthedocs.io/zh/latest/04%20Advanced%20OpenGL/05%20Framebuffers/
     unsigned int textureId;
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId);
@@ -93,6 +75,7 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
     glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, imageEGL);
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -100,13 +83,14 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
 
     AndroidBitmap_unlockPixels(env, bmp);
 
-    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "fbo textureId %d %d\n", fbo, textureId);
+    ALOGD("fbo textureId %d %d\n", fbo, textureId);
 
     GLuint program = eglHelper.createProgram(VERTEX_SHADER, FRAG_SHADER);
-    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "zcc program: %d\n", program);
-    //ALOGD("zcc program: %d\n", program);
+    ALOGD("zcc program: %d\n", program);
     glBindAttribLocation(program, 0, "a_position");
     glBindAttribLocation(program, 1, "a_texCoord");
+
+    glViewport(0, 0, width, height);
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -122,35 +106,19 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
     glVertexAttribPointer(1, 2, GL_FLOAT, 1, 0, squareUvs);
     glEnableVertexAttribArray(1);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glFinish();
-
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    unsigned char pixles[4];
-    glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixles);
-    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "glreadpixel %u,%u,%u,%u",pixles[0],pixles[1],pixles[2],pixles[3]);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    memcpy(pixels, planes_info.planes[0].data, width * height * 4);
 
     unsigned char *ptrReader = nullptr;
     unsigned char *dstBuffer = static_cast<unsigned char *>(malloc(width * height * 4));
     AHardwareBuffer_lock(inBuffer, AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN, -1, nullptr, (void **) &ptrReader);
-    //memcpy(dstBuffer, ptrReader, width * height * 4);
-    memcpy(pixels, ptrReader, width * height * 4);
+    memcpy(dstBuffer, ptrReader, width * height * 4);
     AHardwareBuffer_unlock(inBuffer, nullptr);
-    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "dstBuffer dstBuffer1 dstBuffer2 %d %d %d\n", *dstBuffer, *(dstBuffer + 1),
-                        *(dstBuffer + 2));
+    ALOGD("dstBuffer %d %d %d %d\n", *dstBuffer, *(dstBuffer + 1), *(dstBuffer + 2), *(dstBuffer + 3));
 
     eglHelper.makeNothingCurrent();
-
-//    eglHelper.makeCurrent();
-//    eglHelper.createInput(info.width, info.height);
-//    eglHelper.createOutput(info.width, info.height);
-//    eglHelper.uploadData(info.width, info.height, &pixels);
-//    eglHelper.downloadData(info.width, info.height, &pixels);
-//    eglHelper.makeNothingCurrent();
-
-
 
     return env->NewStringUTF(hello.c_str());
 }
