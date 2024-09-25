@@ -1,6 +1,4 @@
 #include "EglHelper.h"
-#include <android/log.h>
-#include <sstream>
 
 EglHelper::EglHelper() {
 
@@ -9,11 +7,11 @@ EglHelper::EglHelper() {
 void EglHelper::initEgl() {
     mEglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if (mEglDisplay == EGL_NO_DISPLAY) {
-        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "eglGetDisplay error");
+        ALOGE("eglGetDisplay error");
     }
     EGLint *version = new EGLint[2];
     if (!eglInitialize(mEglDisplay, &version[0], &version[1])) {
-        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "eglInitialize error");
+        ALOGE("eglInitialize error");
     }
 
     const EGLint attrib_config_list[] = {
@@ -29,7 +27,7 @@ void EglHelper::initEgl() {
 
     EGLint config;
     if (!eglChooseConfig(mEglDisplay, attrib_config_list, &mEglConfig, 1, &config)) {
-        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "eglChooseConfig error");
+        ALOGE("eglChooseConfig error");
     }
 
     const EGLint attrib_ctx_list[] = {
@@ -38,26 +36,26 @@ void EglHelper::initEgl() {
     };
     mEglContext = eglCreateContext(mEglDisplay, mEglConfig, NULL, attrib_ctx_list);
     if (mEglContext == EGL_NO_CONTEXT) {
-        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "eglCreateContext error");
+        ALOGE("eglCreateContext error");
     }
 
     //mEglSurface = eglCreateWindowSurface(mEglDisplay, eglConfig, window, NULL);
     mEglSurface = eglCreatePbufferSurface(mEglDisplay, mEglConfig, NULL);
     if (mEglSurface == EGL_NO_SURFACE) {
-        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "eglCreateWindowSurface error");
+        ALOGE("eglCreateWindowSurface error");
     }
 
-    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Context init mEGLDisplay %p %p %p %d\n", mEglDisplay, mEglConfig, mEglContext, config);
+    ALOGD("Context init mEGLDisplay %p %p %p %d\n", mEglDisplay, mEglConfig, mEglContext, config);
 }
 
 void EglHelper::makeCurrent() {
     // 绑定eglContext和surface到display
     if (!eglMakeCurrent(mEglDisplay, mEglSurface, mEglSurface, mEglContext)) {
-        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "eglMakeCurrent error");
+        ALOGE("eglMakeCurrent error");
     }
 }
 
-void EglHelper::makeNothingCurrent() {
+void EglHelper::breakCurrent() {
     eglMakeCurrent(mEglDisplay, NULL, NULL, NULL);
 }
 

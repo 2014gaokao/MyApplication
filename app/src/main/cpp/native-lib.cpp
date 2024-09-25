@@ -9,7 +9,8 @@
 
 #include <android/bitmap.h>
 
-
+//https://blog.csdn.net/cfc1243570631/article/details/135139836
+//https://blog.csdn.net/qq_32708325/article/details/139812520
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz, jobject bmp) {
     std::string hello = "Hello from C++";
@@ -101,9 +102,9 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
     glUniform1i(glGetUniformLocation(program, "sTexture"), 0);
     glUniformMatrix4fv(glGetUniformLocation(program, "uMVPMatrix"), 1, GL_FALSE, IDENTITY_MATRIX);
     glUniformMatrix4fv(glGetUniformLocation(program, "uSTMatrix"), 1, GL_FALSE, IDENTITY_MATRIX);
-    glVertexAttribPointer(0, 2, GL_FLOAT, 0, 0, squareVertices);
+    glVertexAttribPointer(0, 2, GL_FLOAT, 0, 0, vertex);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, 1, 0, squareUvs);
+    glVertexAttribPointer(1, 2, GL_FLOAT, 1, 0, texture);
     glEnableVertexAttribArray(1);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glFinish();
@@ -118,7 +119,7 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
     AHardwareBuffer_unlock(inBuffer, nullptr);
     ALOGD("dstBuffer %d %d %d %d\n", *dstBuffer, *(dstBuffer + 1), *(dstBuffer + 2), *(dstBuffer + 3));
 
-    eglHelper.makeNothingCurrent();
+    eglHelper.breakCurrent();
 
     return env->NewStringUTF(hello.c_str());
 }

@@ -8,6 +8,8 @@
 #include <android/hardware_buffer.h>
 
 #include <string>
+#include <android/log.h>
+#include <sstream>
 
 #ifndef LOG_TAG
 #define LOG_TAG "zcc c++"
@@ -22,14 +24,6 @@ public:
     EGLSurface mEglSurface;
     EGLConfig mEglConfig;
 
-    AHardwareBuffer *inputGraphicBuf = NULL;
-    GLuint inTextureId = 0;
-    GLuint in_fbo;
-
-    AHardwareBuffer *outputGraphicBuf = NULL;
-    GLuint outTextureId;
-    GLuint rt_fbo;
-
     EglHelper();
     ~EglHelper();
 
@@ -42,14 +36,13 @@ public:
 
     void initEgl();
     void makeCurrent();
-    void makeNothingCurrent();
-    void swapBuffers();
+    void breakCurrent();
 
 };
 
-const GLfloat squareVertices[] = {-1, 1, -1, -1, 1, 1, 1, -1};
+const GLfloat vertex[] = {-1, 1, -1, -1, 1, 1, 1, -1};
 
-const GLfloat squareUvs[] = {0, 1, 0, 0, 1, 1, 1, 0};
+const GLfloat texture[] = {0, 1, 0, 0, 1, 1, 1, 0};
 
 const GLfloat IDENTITY_MATRIX[16] = {
         1, 0, 0, 0,
@@ -63,7 +56,6 @@ const GLfloat IDENTITY_MATRIX[16] = {
 "layout (location = 0) in vec4 a_position;\n" \
 "layout (location = 1) in vec2 a_texCoord;\n" \
 "out vec2 v_texCoord;\n"      \
-"precision highp float;\n"                         \
 "uniform mat4 uMVPMatrix; \n" \
 "uniform mat4 uSTMatrix; \n"                    \
 "void main()\n" \
@@ -77,13 +69,12 @@ const GLfloat IDENTITY_MATRIX[16] = {
 "#version 300 es\n"             \
 "#extension GL_OES_EGL_image_external_essl3 : require\n" \
 "#extension GL_EXT_YUV_target : require\n"          \
-"#define gl_FragColor outColor\n"                  \
 "in vec2 v_texCoord;\n"         \
 "uniform sampler2D sTexture;"                    \
-"out vec4 gl_FragColor;\n" \
+"out vec4 outColor;\n" \
 "void main()\n" \
 "{\n" \
-"	gl_FragColor = texture(sTexture, v_texCoord);\n"     \
-"   float average = 0.21 * gl_FragColor.r + 0.71 * gl_FragColor.g + 0.07 * gl_FragColor.b;\n" \
-"   gl_FragColor = vec4(average, average, average, 1.0);\n"                    \
+"	outColor = texture(sTexture, v_texCoord);\n"     \
+"   float average = 0.21 * outColor.r + 0.71 * outColor.g + 0.07 * outColor.b;\n" \
+"   outColor = vec4(average, average, average, 1.0);\n"                    \
 "}\n"
