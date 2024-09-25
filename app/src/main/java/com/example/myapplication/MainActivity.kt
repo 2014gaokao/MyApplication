@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -19,13 +20,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.main)
         val imageView : ImageView = findViewById(R.id.src)
-        val src = Bitmap.createBitmap(250, 250, Bitmap.Config.ARGB_8888).apply {
-            for (x in 0 until width) {
-                for (y in 0 until height) {
-                    setPixel(x, y, Color.RED)
-                }
-            }
-        }
+        val src: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.cxk);
         val copy: Bitmap = src.copy(Bitmap.Config.ARGB_8888, false)
         JNILoader().stringFromJNI(copy)
         imageView.setImageBitmap(copy)

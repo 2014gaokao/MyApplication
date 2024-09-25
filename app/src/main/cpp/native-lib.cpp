@@ -40,8 +40,6 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
         return nullptr;
     }
 
-    ALOGD("width height %d %d\n", info.width, info.height);
-
     uint32_t width = info.width;
     uint32_t height = info.height;
 
@@ -56,6 +54,8 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
 
     AHardwareBuffer_Planes planes_info = {0};
     ret = AHardwareBuffer_lockPlanes(inBuffer, AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN, -1, nullptr, &planes_info);
+    int rowStride = planes_info.planes[0].rowStride;
+    ALOGD("rowStride stride width height: %d %d %d %d\n", rowStride, info.width * 4, info.width, info.height);
     memcpy(planes_info.planes[0].data, pixels, width * height * 4);
     ret = AHardwareBuffer_unlock(inBuffer, nullptr);
 

@@ -75,6 +75,6 @@ const GLfloat IDENTITY_MATRIX[16] = {
 "void main()\n" \
 "{\n" \
 "	outColor = texture(sTexture, v_texCoord);\n"     \
-"   float average = 0.21 * outColor.r + 0.71 * outColor.g + 0.07 * outColor.b;\n" \
+"   float average = 0.3 * outColor.r + 0.59 * outColor.g + 0.11 * outColor.b;\n" \
 "   outColor = vec4(average, average, average, 1.0);\n"                    \
 "}\n"
