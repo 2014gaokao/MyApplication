@@ -14,7 +14,7 @@
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz, jobject bmp) {
     std::string hello = "Hello from C++";
-    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "main thread id %u\n", std::this_thread::get_id());
+    ALOGD("main thread id %u\n", std::this_thread::get_id());
 
     EglHelper eglHelper = *new EglHelper();
     eglHelper.initEgl();
@@ -59,10 +59,11 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
     memcpy(planes_info.planes[0].data, pixels, width * height * 4);
     ret = AHardwareBuffer_unlock(inBuffer, nullptr);
 
-    EGLint eglImageAttributes[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE};
+    //https://github.com/fuyufjh/GraphicBuffer
     EGLClientBuffer clientBuf = eglGetNativeClientBufferANDROID(inBuffer);
-    EGLImageKHR imageEGL = eglCreateImageKHR(eglHelper.mEglDisplay, EGL_NO_CONTEXT, EGL_NATIVE_BUFFER_ANDROID,
-                                             clientBuf, reinterpret_cast<const EGLint *>(eglImageAttributes));
+    EGLDisplay disp = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    EGLint eglImageAttributes[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE};
+    EGLImageKHR imageEGL = eglCreateImageKHR(disp, EGL_NO_CONTEXT, EGL_NATIVE_BUFFER_ANDROID, clientBuf, eglImageAttributes);
 
     unsigned int fbo;
     glGenFramebuffers(1, &fbo);
@@ -87,7 +88,6 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
     ALOGD("fbo textureId %d %d\n", fbo, textureId);
 
     GLuint program = eglHelper.createProgram(VERTEX_SHADER, FRAG_SHADER);
-    ALOGD("zcc program: %d\n", program);
     glBindAttribLocation(program, 0, "a_position");
     glBindAttribLocation(program, 1, "a_texCoord");
 
