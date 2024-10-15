@@ -30,14 +30,13 @@ class MainActivity : AppCompatActivity() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-        val imageView : ImageView = findViewById(R.id.src)
-        imageView.setOnClickListener {
-            viewModel.updateUser("cxk")
-        }
         val src: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.cxk);
         val copy: Bitmap = src.copy(Bitmap.Config.ARGB_8888, false)
         JNILoader().stringFromJNI(copy)
-        imageView.setImageBitmap(copy)
+        binding.image.setImageBitmap(copy)
+        binding.image.setOnClickListener {
+            viewModel.updateUser("蔡徐坤")
+        }
 
 //        setContent {
 //            MyApplicationTheme {
