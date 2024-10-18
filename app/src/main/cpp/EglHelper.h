@@ -70,11 +70,55 @@ const GLfloat IDENTITY_MATRIX[16] = {
 "#extension GL_OES_EGL_image_external_essl3 : require\n" \
 "#extension GL_EXT_YUV_target : require\n"          \
 "in vec2 v_texCoord;\n"         \
-"uniform sampler2D sTexture;"                    \
-"out vec4 outColor;\n" \
+"uniform sampler2D sTexture;\n"                    \
+"out vec4 outColor;\n"          \
 "void main()\n" \
 "{\n" \
 "	outColor = texture(sTexture, v_texCoord);\n"     \
-"   float average = 0.3 * outColor.r + 0.59 * outColor.g + 0.11 * outColor.b;\n" \
-"   outColor = vec4(average, average, average, 1.0);\n"                    \
+"}\n"
+
+
+#define FRAG_SHADER_GREY \
+"#version 300 es\n"             \
+"#extension GL_OES_EGL_image_external_essl3 : require\n" \
+"#extension GL_EXT_YUV_target : require\n"               \
+"in vec2 v_texCoord;\n"         \
+"uniform sampler2D sTexture;\n"                    \
+"out vec4 outColor;\n"          \
+"void main()\n" \
+"{\n" \
+"	outColor = texture(sTexture, v_texCoord);\n"     \
+"   float weightMean = outColor.r * 0.3 + outColor.g * 0.59 + outColor.b * 0.11;\n" \
+"   outColor.r = outColor.g = outColor.b = weightMean;\n"                    \
+"}\n"
+
+
+#define FRAG_SHADER_BLACKANDWHITE \
+"#version 300 es\n"             \
+"#extension GL_OES_EGL_image_external_essl3 : require\n" \
+"#extension GL_EXT_YUV_target : require\n"               \
+"in vec2 v_texCoord;\n"         \
+"uniform sampler2D sTexture;\n"                    \
+"out vec4 outColor;\n"\
+"void main()\n" \
+"{\n"                 \
+"   outColor = texture(sTexture, v_texCoord);\n"        \
+"   float mean = (outColor.r + outColor.g + outColor.b) / 3.0;\n"                       \
+"   outColor.r = outColor.g = outColor.b = mean >= 0.5 ? 1.0 : 0.0;\n"                    \
+"}\n"
+
+
+#define FRAG_SHADER_REVERSE \
+"#version 300 es\n"             \
+"#extension GL_OES_EGL_image_external_essl3 : require\n" \
+"#extension GL_EXT_YUV_target : require\n"               \
+"in vec2 v_texCoord;\n"         \
+"uniform sampler2D sTexture;\n"                    \
+"out vec4 outColor;\n"\
+"void main()\n" \
+"{\n"                 \
+"   outColor = texture(sTexture, v_texCoord);\n"        \
+"   outColor.r = 1.0 - outColor.r;\n"                       \
+"   outColor.g = 1.0 - outColor.g;\n"                    \
+"   outColor.b = 1.0 - outColor.b;\n"                      \
 "}\n"

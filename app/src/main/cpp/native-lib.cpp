@@ -87,7 +87,7 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
 
     ALOGD("fbo textureId %d %d\n", fbo, textureId);
 
-    GLuint program = eglHelper.createProgram(VERTEX_SHADER, FRAG_SHADER);
+    GLuint program = eglHelper.createProgram(VERTEX_SHADER, FRAG_SHADER_GREY);
     glBindAttribLocation(program, 0, "a_position");
     glBindAttribLocation(program, 1, "a_texCoord");
 
