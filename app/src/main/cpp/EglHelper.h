@@ -108,7 +108,7 @@ const GLfloat IDENTITY_MATRIX[16] = {
 "}\n"
 
 
-#define FRAG_SHADER_REVERSE \
+#define FRAG_SHADER_SPLIT \
 "#version 300 es\n"             \
 "#extension GL_OES_EGL_image_external_essl3 : require\n" \
 "#extension GL_EXT_YUV_target : require\n"               \
@@ -116,9 +116,10 @@ const GLfloat IDENTITY_MATRIX[16] = {
 "uniform sampler2D sTexture;\n"                    \
 "out vec4 outColor;\n"\
 "void main()\n" \
-"{\n"                 \
-"   outColor = texture(sTexture, v_texCoord);\n"        \
-"   outColor.r = 1.0 - outColor.r;\n"                       \
-"   outColor.g = 1.0 - outColor.g;\n"                    \
-"   outColor.b = 1.0 - outColor.b;\n"                      \
+"{\n"                     \
+"   vec2 p = v_texCoord;" \
+"   if (p.x < 0.5) {"     \
+"       p.x = 1.0 - p.x;"     \
+"   }"                          \
+"   outColor = texture(sTexture, p);\n"        \
 "}\n"

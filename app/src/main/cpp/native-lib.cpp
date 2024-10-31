@@ -54,9 +54,13 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
 
     AHardwareBuffer_Planes planes_info = {0};
     ret = AHardwareBuffer_lockPlanes(inBuffer, AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN, -1, nullptr, &planes_info);
-    int rowStride = planes_info.planes[0].rowStride;
+    int rowStride = planes_info.planes[0].rowStride; //7680 7592
     ALOGD("rowStride stride width height: %d %d %d %d\n", rowStride, info.width * 4, info.width, info.height);
-    memcpy(planes_info.planes[0].data, pixels, width * height * 4);
+    //memcpy(planes_info.planes[0].data, pixels, width * height * 4);
+    for (int i = 0; i < height; ++i) {
+        memcpy((char *) planes_info.planes[0].data + i * rowStride, (char *) pixels + i * width * 4,
+               rowStride < width * 4 ? rowStride : width * 4);
+    }
     ret = AHardwareBuffer_unlock(inBuffer, nullptr);
 
     //https://github.com/fuyufjh/GraphicBuffer
@@ -110,7 +114,11 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
     glFinish();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    memcpy(pixels, planes_info.planes[0].data, width * height * 4);
+    //memcpy(pixels, planes_info.planes[0].data, width * height * 4);
+    for (int i = 0; i < height; ++i) {
+        memcpy((char *) pixels + i * width * 4, (char *) planes_info.planes[0].data + i * rowStride,
+               rowStride < width * 4 ? rowStride : width * 4);
+    }
 
     unsigned char *ptrReader = nullptr;
     unsigned char *dstBuffer = static_cast<unsigned char *>(malloc(width * height * 4));
