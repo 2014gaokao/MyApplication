@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10.2)
 
 project("jnidemo")
 
-add_library(native-lib SHARED native-lib.cpp EglHelper.cpp)
+add_library(native-lib SHARED native-lib.cpp EglHelper.cpp GrayRender.cpp)
 
 find_library(lib_log log)
 
