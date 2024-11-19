@@ -40,17 +40,6 @@ class MainActivity : AppCompatActivity() {
         binding.image.setOnClickListener {
             viewModel.updateUser("蔡徐坤")
         }
-
-//        setContent {
-//            MyApplicationTheme {
-//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    Greeting(
-//                        name = "Android" + JNILoader().stringFromJNI(),
-//                        modifier = Modifier.padding(innerPadding)
-//                    )
-//                }
-//            }
-//        }
     }
 }
 
