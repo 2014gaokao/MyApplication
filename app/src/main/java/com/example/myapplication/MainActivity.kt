@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.ImageView
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,16 +18,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
-    lateinit var viewModel: UserViewModel
+    //lateinit var viewModel: UserViewModel
+    private val viewModel: UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        //viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         viewModel.user.observe(this, Observer { newData -> Log.d("zcc", newData.name) })
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -39,6 +44,14 @@ class MainActivity : AppCompatActivity() {
         binding.image.setImageBitmap(copy)
         binding.image.setOnClickListener {
             viewModel.updateUser("蔡徐坤")
+        }
+
+        runBlocking {
+            val job = launch {
+                delay(3000)
+            }
+            job.join()
+            Log.d("zcc", "join")
         }
     }
 }
