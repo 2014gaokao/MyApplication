@@ -45,14 +45,15 @@ class MainActivity : AppCompatActivity() {
         binding.image.setOnClickListener {
             viewModel.updateUser("蔡徐坤")
         }
+        viewModel.user.observe(this, Observer { newData -> Log.d("zcc1", newData.name) })
 
-        runBlocking {
-            val job = launch {
-                delay(3000)
-            }
-            job.join()
-            Log.d("zcc", "join")
-        }
+//        runBlocking {
+//            val job = launch {
+//                delay(3000)
+//            }
+//            job.join()
+//            Log.d("zcc", "join")
+//        }
     }
 }
 
