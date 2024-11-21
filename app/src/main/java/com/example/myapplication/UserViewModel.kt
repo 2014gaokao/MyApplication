@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 
 class UserViewModel : ViewModel() {
     // 使用 MutableLiveData 来保存数据
-    private var _user = SingleLiveData<User>()
+    private var _user = MutableLiveData<User>()
 
     // 公共的 LiveData 用于暴露数据
     val user : LiveData<User> get() = _user

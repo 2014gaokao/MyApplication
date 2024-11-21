@@ -4,8 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
-import android.widget.ImageView
-import androidx.activity.ComponentActivity
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -18,34 +17,32 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var binding: ActivityMainBinding
-    //lateinit var viewModel: UserViewModel
-    private val viewModel: UserViewModel by viewModels()
+    private lateinit var activityMainBinding: ActivityMainBinding
+    private lateinit var viewModel: UserViewModel
+    //private val viewModel: UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        //viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(activityMainBinding.root)
+        viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         viewModel.user.observe(this, Observer { newData -> Log.d("zcc", newData.name) })
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = this
+        //activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        activityMainBinding.viewModel = viewModel
+        activityMainBinding.lifecycleOwner = this
 
         val src: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.cxk);
         val copy: Bitmap = src.copy(Bitmap.Config.ARGB_8888, false)
         JNILoader().stringFromJNI(copy)
-        binding.image.setImageBitmap(copy)
-        binding.image.setOnClickListener {
+        activityMainBinding.image.setImageBitmap(copy)
+        activityMainBinding.image.setOnClickListener {
             viewModel.updateUser("蔡徐坤")
         }
-        viewModel.user.observe(this, Observer { newData -> Log.d("zcc1", newData.name) })
 
 //        runBlocking {
 //            val job = launch {
@@ -55,20 +52,27 @@ class MainActivity : AppCompatActivity() {
 //            Log.d("zcc", "join")
 //        }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    override fun onResume() {
+        super.onResume()
+        // Before setting full screen flags, we must wait a bit to let UI settle; otherwise, we may
+        // be trying to set app to immersive mode before it's ready and the flags do not stick
+        activityMainBinding.fragmentContainer.postDelayed({
+            activityMainBinding.fragmentContainer.systemUiVisibility = FLAGS_FULLSCREEN
+        }, IMMERSIVE_FLAG_TIMEOUT)
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MyApplicationTheme {
-        Greeting("Android")
+    companion object {
+        /** Combination of all flags required to put activity into immersive mode */
+        const val FLAGS_FULLSCREEN =
+            View.SYSTEM_UI_FLAG_LOW_PROFILE or
+                    View.SYSTEM_UI_FLAG_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+
+        /** Milliseconds used for UI animations */
+        const val ANIMATION_FAST_MILLIS = 50L
+        const val ANIMATION_SLOW_MILLIS = 100L
+        private const val IMMERSIVE_FLAG_TIMEOUT = 500L
     }
 }
