@@ -4,7 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class UserViewModel : ViewModel() {
+class OpenGLViewModel : ViewModel() {
+    // TODO: Implement the ViewModel
     // 使用 MutableLiveData 来保存数据
     private var _user = MutableLiveData<User>()
 

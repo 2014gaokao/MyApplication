@@ -89,9 +89,6 @@ class CameraFragment : Fragment() {
 
     private lateinit var relativeOrientation: OrientationLiveData
 
-    private lateinit var viewModel: UserViewModel
-    //private val viewModel: UserViewModel by viewModels()
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -131,20 +128,6 @@ class CameraFragment : Fragment() {
         arguments?.let {
             camera_id = it.getString("camera_id")
             pixel_format = it.getInt("pixel_format")
-        }
-
-        viewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        viewModel.user.observe(viewLifecycleOwner, Observer { newData -> Log.d("zcc", newData.name) })
-
-        fragmentCameraBinding.viewModel = viewModel
-        fragmentCameraBinding.lifecycleOwner = this
-
-        val src: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.cxk);
-        val copy: Bitmap = src.copy(Bitmap.Config.ARGB_8888, false)
-        JNILoader().stringFromJNI(copy)
-        fragmentCameraBinding.image.setImageBitmap(copy)
-        fragmentCameraBinding.image.setOnClickListener {
-            viewModel.updateUser("蔡徐坤")
         }
 
         // Used to rotate the output media to match device orientation

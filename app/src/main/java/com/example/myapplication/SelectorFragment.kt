@@ -44,8 +44,13 @@ class SelectorFragment : Fragment() {
                         putString("camera_id", item.cameraId)
                         putInt("pixel_format", item.format)
                     }
-                    Navigation.findNavController(requireActivity(), R.id.fragment_container)
-                        .navigate(R.id.action_selector_to_camera, bundle)
+                    if (item.title == "bitmap opengl hardware buffer") {
+                        Navigation.findNavController(requireActivity(), R.id.fragment_container)
+                            .navigate(R.id.action_selector_fragment_to_openGLFragment, bundle)
+                    } else{
+                        Navigation.findNavController(requireActivity(), R.id.fragment_container)
+                            .navigate(R.id.action_selector_to_camera, bundle)
+                    }
                 }
             }
         }
@@ -111,6 +116,8 @@ class SelectorFragment : Fragment() {
                         "$orientation DEPTH ($id)", id, ImageFormat.DEPTH_JPEG))
                 }
             }
+
+            availableCameras.add(FormatItem("bitmap opengl hardware buffer", "0", ImageFormat.JPEG))
 
             return availableCameras
         }
