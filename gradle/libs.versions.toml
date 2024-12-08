@@ -2,6 +2,7 @@
 agp = "8.5.2"
 kotlin = "1.9.0"
 coreKtx = "1.10.1"
+safeArgs = "2.5.3"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
@@ -15,6 +16,7 @@ dataBindingRuntimeKtx = "3.4.1"
 navigationFragmentKtx = "2.3.0"
 navigationUIKtx = "2.3.0"
 appcompat = "1.7.0"
+viewpager2 = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,8 +40,10 @@ androidx-databinding-runtime-ktx = { group = "androidx.databinding", name = "dat
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUIKtx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+androidx-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "safeArgs" }
 
