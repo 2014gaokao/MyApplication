@@ -30,6 +30,9 @@
         <action
             android:id="@+id/action_selector_fragment_to_openGLFragment"
             app:destination="@id/openGLFragment" />
+        <action
+            android:id="@+id/action_selector_fragment_to_GLESFragment"
+            app:destination="@id/GLESFragment" />
 
     </fragment>
 
@@ -66,5 +69,10 @@
         android:name="com.example.myapplication.OpenGLFragment"
         android:label="fragment_opengl"
         tools:layout="@layout/fragment_opengl" />
+    <fragment
+        android:id="@+id/GLESFragment"
+        android:name="com.example.myapplication.GLESFragment"
+        android:label="fragment_gles"
+        tools:layout="@layout/fragment_gles" />
 
 </navigation>

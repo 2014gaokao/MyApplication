@@ -47,7 +47,10 @@ class SelectorFragment : Fragment() {
                     if (item.title == "bitmap opengl hardware buffer") {
                         Navigation.findNavController(requireActivity(), R.id.fragment_container)
                             .navigate(R.id.action_selector_fragment_to_openGLFragment, bundle)
-                    } else{
+                    } else if (item.title == "gles learning") {
+                        Navigation.findNavController(requireActivity(), R.id.fragment_container)
+                            .navigate(R.id.action_selector_fragment_to_GLESFragment, bundle)
+                    } else {
                         Navigation.findNavController(requireActivity(), R.id.fragment_container)
                             .navigate(R.id.action_selector_to_camera, bundle)
                     }
@@ -118,6 +121,8 @@ class SelectorFragment : Fragment() {
             }
 
             availableCameras.add(FormatItem("bitmap opengl hardware buffer", "0", ImageFormat.JPEG))
+
+            availableCameras.add(FormatItem("gles learning", "0", ImageFormat.JPEG))
 
             return availableCameras
         }
