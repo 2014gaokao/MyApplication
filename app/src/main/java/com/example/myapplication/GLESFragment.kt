@@ -1,8 +1,10 @@
 package com.example.myapplication
 
 import android.os.Bundle
+import android.util.Size
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import com.example.myapplication.databinding.FragmentGlesBinding
@@ -24,6 +26,8 @@ class GLESFragment : Fragment() {
 
     private lateinit var binding: FragmentGlesBinding
 
+    private val renderer by lazy { ExampleRenderer(requireContext().applicationContext) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -38,8 +42,20 @@ class GLESFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentGlesBinding.inflate(inflater)
-        binding.glSurfaceView.setEGLContextClientVersion(3)
-        binding.glSurfaceView.setRenderer(MyRenderer())
+        binding.glSurfaceView.holder.addCallback(object : SurfaceHolder.Callback {
+            override fun surfaceCreated(holder: SurfaceHolder) {
+                renderer.onSurfaceCreated()
+            }
+
+            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+                renderer.onSurfaceChanged(holder.surface, width, height)
+            }
+
+            override fun surfaceDestroyed(holder: SurfaceHolder) {
+                renderer.surfaceDestroyed()
+            }
+
+        })
         //return inflater.inflate(R.layout.fragment_gles, container, false)
         return binding.root
     }

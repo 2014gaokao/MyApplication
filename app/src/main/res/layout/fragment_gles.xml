@@ -6,12 +6,12 @@
         android:layout_height="match_parent"
         tools:context=".GLESFragment">
 
-        <android.opengl.GLSurfaceView
+        <SurfaceView
             android:id="@+id/glSurfaceView"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        </android.opengl.GLSurfaceView>
+        </SurfaceView>
 
     </FrameLayout>
 </layout>
