@@ -17,6 +17,8 @@
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define ALOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
+#pragma once
+
 class EglHelper {
 public:
     EGLDisplay mEglDisplay;
@@ -90,21 +92,4 @@ const GLfloat IDENTITY_MATRIX[16] = {
 "   outColor = texture(sTexture, v_texCoord);\n"        \
 "   float mean = (outColor.r + outColor.g + outColor.b) / 3.0;\n"                       \
 "   outColor.r = outColor.g = outColor.b = mean >= 0.5 ? 1.0 : 0.0;\n"                    \
-"}\n"
-
-
-#define FRAG_SHADER_SPLIT \
-"#version 300 es\n"             \
-"#extension GL_OES_EGL_image_external_essl3 : require\n" \
-"#extension GL_EXT_YUV_target : require\n"               \
-"in vec2 v_texCoord;\n"         \
-"uniform sampler2D sTexture;\n"                    \
-"out vec4 outColor;\n"\
-"void main()\n" \
-"{\n"                     \
-"   vec2 p = v_texCoord;" \
-"   if (p.x < 0.5) {"     \
-"       p.x = 1.0 - p.x;"     \
-"   }"                          \
-"   outColor = texture(sTexture, p);\n"        \
 "}\n"

@@ -6,6 +6,7 @@
 #include <android/log.h>
 
 #include "GrayRender.h"
+#include "SplitRender.h"
 
 #include <android/bitmap.h>
 
@@ -96,6 +97,27 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
     grayRender.onSurfaceCreated();
     grayRender.onSurfaceChanged(width, height);
     grayRender.onDrawFrame(textureId);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+//    unsigned int test_fbo;
+//    glGenFramebuffers(1, &test_fbo);
+//    glBindFramebuffer(GL_FRAMEBUFFER, test_fbo);
+//    unsigned int test_textureId;
+//    glGenTextures(1, &test_textureId);
+//    glBindTexture(GL_TEXTURE_2D, test_textureId);
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+//    glBindFramebuffer(GL_FRAMEBUFFER, test_fbo);
+//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
+//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    SplitRender splitRender = *new SplitRender();
+    splitRender.onSurfaceCreated();
+    splitRender.onSurfaceChanged(width, height);
+    splitRender.onDrawFrame(textureId);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     //memcpy(pixels, planes_info.planes[0].data, width * height * 4);
