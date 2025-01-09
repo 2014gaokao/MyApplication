@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -18,8 +19,10 @@ import android.media.Image
 import android.media.ImageReader
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.HandlerThread
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Surface
@@ -341,6 +344,22 @@ class CameraFragment : Fragment() {
                 val bytes = ByteArray(buffer.remaining()).apply { buffer.get(this) }
                 try {
                     val output = createFile(requireContext(), "jpg")
+
+                    MediaStoreUtils().saveImageToMedia(requireContext(), bytes, output.absolutePath)
+
+//                    FileOutputStream(output).use { it.write(bytes) }
+//                    cont.resume(output)
+                } catch (exc: IOException) {
+                    Log.e(TAG, "Unable to write JPEG image to file", exc)
+                    cont.resumeWithException(exc)
+                }
+            }
+
+            ImageFormat.YUV_420_888 -> {
+                val buffer = result.image.planes[0].buffer
+                val bytes = ByteArray(buffer.remaining()).apply { buffer.get(this) }
+                try {
+                    val output = createFile(requireContext(), "yuv")
                     FileOutputStream(output).use { it.write(bytes) }
                     cont.resume(output)
                 } catch (exc: IOException) {

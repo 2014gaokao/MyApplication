@@ -120,6 +120,8 @@ class SelectorFragment : Fragment() {
                 }
             }
 
+            availableCameras.add(FormatItem("BACK YUV (0)", "0", ImageFormat.YUV_420_888))
+
             availableCameras.add(FormatItem("bitmap opengl hardware buffer", "0", ImageFormat.JPEG))
 
             availableCameras.add(FormatItem("gles learning", "0", ImageFormat.JPEG))
