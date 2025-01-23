@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.cli.jvm.main
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -21,6 +23,10 @@ android {
                 cppFlags("")
             }
         }
+        ndk {
+            abiFilters.add("armeabi-v7a")
+            abiFilters.add("arm64-v8a")
+        }
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -38,6 +44,11 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDirs("libs")
+        }
     }
     externalNativeBuild {
         cmake {

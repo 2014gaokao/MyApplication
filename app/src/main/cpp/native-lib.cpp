@@ -10,6 +10,8 @@
 
 #include <android/bitmap.h>
 
+#include "include/turbojpeg.h"
+
 //https://blog.csdn.net/cfc1243570631/article/details/135139836
 //https://blog.csdn.net/qq_32708325/article/details/139812520
 extern "C" JNIEXPORT jstring JNICALL
@@ -136,4 +138,32 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
     eglHelper.breakCurrent();
 
     return env->NewStringUTF(hello.c_str());
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_com_example_myapplication_JNILoader_tyuv2jpeg(unsigned char* yuv_buffer, int yuv_size, int width, int height, int subsample, unsigned char** jpeg_buffer, unsigned long* jpeg_size, int quality) {
+    tjhandle handle = NULL;
+    int flags = 0;
+    int padding = 1; // 1或4均可，但不能是0
+    int need_size = 0;
+    int ret = 0;
+
+    handle = tjInitCompress();
+
+    flags |= 0;
+
+    need_size = tjBufSizeYUV2(width, padding, height, subsample);
+    if (need_size != yuv_size) {
+        printf("we detect yuv size: %d, but you give: %d, check again.\n", need_size, yuv_size);
+        return 0;
+    }
+
+    ret = tjCompressFromYUV(handle, yuv_buffer, width, padding, height, subsample, jpeg_buffer, jpeg_size, quality, flags);
+    if (ret < 0) {
+        printf("compress to jpeg failed: %s\n", tjGetErrorStr());
+    }
+
+    tjDestroy(handle);
+
+    return ret;
 }
