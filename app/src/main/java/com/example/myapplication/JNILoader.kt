@@ -10,4 +10,6 @@ class JNILoader {
     }
 
     external fun stringFromJNI(copy : Bitmap): String
+
+    external fun yuv2jpeg(byteArray: ByteArray, height: Int, width: Int, yuvSize: Int, quality: Int): ByteArray
 }

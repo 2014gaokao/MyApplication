@@ -1,10 +1,7 @@
 package com.example.myapplication
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraCharacteristics
@@ -19,10 +16,8 @@ import android.media.Image
 import android.media.ImageReader
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.os.HandlerThread
-import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Surface
@@ -31,11 +26,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.navArgs
 import com.example.myapplication.databinding.FragmentCameraBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -358,10 +351,18 @@ class CameraFragment : Fragment() {
             ImageFormat.YUV_420_888 -> {
                 val buffer = result.image.planes[0].buffer
                 val bytes = ByteArray(buffer.remaining()).apply { buffer.get(this) }
+
+                var width = result.image.width
+                var height = result.image.height
+                var res : ByteArray = JNILoader().yuv2jpeg(bytes, height, width, width * height / 2 * 3, 96)
+
                 try {
-                    val output = createFile(requireContext(), "yuv")
-                    FileOutputStream(output).use { it.write(bytes) }
-                    cont.resume(output)
+                    val output = createFile(requireContext(), "jpg")
+
+                    MediaStoreUtils().saveImageToMedia(requireContext(), res, output.absolutePath)
+
+//                    FileOutputStream(output).use { it.write(bytes) }
+//                    cont.resume(output)
                 } catch (exc: IOException) {
                     Log.e(TAG, "Unable to write JPEG image to file", exc)
                     cont.resumeWithException(exc)

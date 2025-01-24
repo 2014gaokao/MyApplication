@@ -140,8 +140,7 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
     return env->NewStringUTF(hello.c_str());
 }
 
-extern "C" JNIEXPORT jint JNICALL
-Java_com_example_myapplication_JNILoader_tyuv2jpeg(unsigned char* yuv_buffer, int yuv_size, int width, int height, int subsample, unsigned char** jpeg_buffer, unsigned long* jpeg_size, int quality) {
+int tyuv2jpeg(unsigned char* yuv_buffer, int yuv_size, int width, int height, int subsample, unsigned char** jpeg_buffer, unsigned long* jpeg_size, int quality) {
     tjhandle handle = NULL;
     int flags = 0;
     int padding = 1; // 1或4均可，但不能是0
@@ -153,6 +152,7 @@ Java_com_example_myapplication_JNILoader_tyuv2jpeg(unsigned char* yuv_buffer, in
     flags |= 0;
 
     need_size = tjBufSizeYUV2(width, padding, height, subsample);
+    ALOGD("tyuv2jpeg: need_size = %d, yuv_size = %d", need_size, yuv_size);
     if (need_size != yuv_size) {
         printf("we detect yuv size: %d, but you give: %d, check again.\n", need_size, yuv_size);
         return 0;
@@ -166,4 +166,24 @@ Java_com_example_myapplication_JNILoader_tyuv2jpeg(unsigned char* yuv_buffer, in
     tjDestroy(handle);
 
     return ret;
+}
+
+extern "C"
+JNIEXPORT jbyteArray JNICALL
+Java_com_example_myapplication_JNILoader_yuv2jpeg(JNIEnv *env, jobject thiz, jbyteArray buffer, jint h, jint w, jint yuv_size, jint quality) {
+    ALOGD("yuv2jpeg: size = %d x %d, quality = %d", w, h, quality);
+
+    jbyte *yuv_buffer = env->GetByteArrayElements(buffer, JNI_FALSE);
+    unsigned char *jpegBuf;
+    unsigned long jpegSize = 0;
+    tyuv2jpeg((unsigned char *) yuv_buffer, yuv_size, w, h, TJSAMP_420, &jpegBuf, &jpegSize, quality);
+
+    ALOGD("yuv2jpeg: jpegSize = %ld, jpegBuf = %u", jpegSize, sizeof(jpegBuf));
+
+    jbyteArray array = env->NewByteArray(jpegSize);
+    env->SetByteArrayRegion(array, 0, jpegSize, (jbyte *) jpegBuf);
+
+    free(jpegBuf);
+    env->ReleaseByteArrayElements(buffer, yuv_buffer, JNI_OK);
+    return array;
 }
