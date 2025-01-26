@@ -33,5 +33,4 @@ void GrayRender::onDrawFrame(int textureId) {
     glVertexAttribPointer(1, 2, GL_FLOAT, 1, 0, texture);
     glEnableVertexAttribArray(1);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glFinish();
 }

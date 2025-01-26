@@ -101,6 +101,8 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
     grayRender.onDrawFrame(textureId);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    glFinish();
+
 //    unsigned int test_fbo;
 //    glGenFramebuffers(1, &test_fbo);
 //    glBindFramebuffer(GL_FRAMEBUFFER, test_fbo);
@@ -115,12 +117,12 @@ Java_com_example_myapplication_JNILoader_stringFromJNI(JNIEnv* env, jclass clazz
 //    glBindFramebuffer(GL_FRAMEBUFFER, test_fbo);
 //    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
 //    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    SplitRender splitRender = *new SplitRender();
-    splitRender.onSurfaceCreated();
-    splitRender.onSurfaceChanged(width, height);
-    splitRender.onDrawFrame(textureId);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+//    SplitRender splitRender = *new SplitRender();
+//    splitRender.onSurfaceCreated();
+//    splitRender.onSurfaceChanged(width, height);
+//    splitRender.onDrawFrame(textureId);
+//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     //memcpy(pixels, planes_info.planes[0].data, width * height * 4);
     for (int i = 0; i < height; ++i) {
@@ -186,4 +188,20 @@ Java_com_example_myapplication_JNILoader_yuv2jpeg(JNIEnv *env, jobject thiz, jby
     free(jpegBuf);
     env->ReleaseByteArrayElements(buffer, yuv_buffer, JNI_OK);
     return array;
+}
+
+#include <android/hardware_buffer_jni.h>
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_example_myapplication_JNILoader_processHardwareBuffer(JNIEnv *env, jclass clazz, jobject buffer) {
+    AHardwareBuffer *hardwareBuffer = AHardwareBuffer_fromHardwareBuffer(env, buffer);
+    AHardwareBuffer_Desc desc;
+    AHardwareBuffer_describe(hardwareBuffer, &desc);
+    EGLClientBuffer clientBuf = eglGetNativeClientBufferANDROID(hardwareBuffer);
+    EGLDisplay disp = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    EGLint eglImageAttributes[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE};
+    EGLImageKHR imageEGL = eglCreateImageKHR(disp, EGL_NO_CONTEXT, EGL_NATIVE_BUFFER_ANDROID, clientBuf, eglImageAttributes);
+    glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, imageEGL);
+    return 0;
 }
