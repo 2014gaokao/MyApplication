@@ -350,7 +350,8 @@ class CameraFragment : Fragment() {
 
             ImageFormat.YUV_420_888 -> {
                 val buffer = result.image.planes[0].buffer
-                val bytes = ByteArray(buffer.remaining()).apply { buffer.get(this) }
+                //val bytes = ByteArray(buffer.remaining()).apply { buffer.get(this) }
+                val bytes = getNV21FromImage(result.image)
 
                 var width = result.image.width
                 var height = result.image.height
@@ -420,6 +421,44 @@ class CameraFragment : Fragment() {
             Log.d("zcc", context.filesDir.toString())
             return File(context.filesDir, "IMG_${sdf.format(Date())}.$extension")
         }
+    }
+
+    private fun getNV21FromImage(image: Image): ByteArray {
+        val width = image.width
+        val height = image.height
+
+        val yBytes = ByteArray(image.planes[0].buffer.remaining())
+        image.planes[0].buffer.get(yBytes)
+
+        val uBytes = ByteArray(image.planes[1].buffer.remaining())
+        image.planes[1].buffer.get(uBytes)
+
+        val vBytes = ByteArray(image.planes[2].buffer.remaining())
+        image.planes[2].buffer.get(vBytes)
+
+        val yRowStride = image.planes[0].rowStride
+        val uvRowStride = image.planes[1].rowStride
+        val uvPixelsStride = image.planes[1].pixelStride
+        Log.d(TAG, "yRowStride: $yRowStride; vuRowStride: $uvRowStride; vuPixelsStride: $uvPixelsStride; width: $width; height: $height")
+
+        val yuvBytes = ByteArray(width * height * ImageFormat.getBitsPerPixel(ImageFormat.YUV_420_888) / 8)
+
+        //https://juejin.cn/post/7221354195914981433
+        //https://www.leovp.com/2020/05/14/2020-05-14-Get-Realtime-Data-From-Camera2-And-Encode-H264/
+        if (yRowStride == width) {
+            //两者相等，说明每个YUV块紧密相连，可以直接拷贝
+            System.arraycopy(yBytes, 0, yuvBytes, 0, width * height)
+
+            val uvSize = (width * height) shr 2
+            if (uvPixelsStride == 2) {
+                for (i in 0 until uvSize) {
+                    yuvBytes[width * height + i] = uBytes[i * uvPixelsStride]
+                    yuvBytes[width * height + uvSize + i] = vBytes[i * uvPixelsStride]
+                }
+                return yuvBytes
+            }
+        }
+        return yuvBytes
     }
 
 }
