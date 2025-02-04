@@ -349,6 +349,7 @@ class CameraFragment : Fragment() {
             }
 
             ImageFormat.YUV_420_888 -> {
+                JNILoader().processHardwareBuffer(result.image.hardwareBuffer)
                 val buffer = result.image.planes[0].buffer
                 //val bytes = ByteArray(buffer.remaining()).apply { buffer.get(this) }
                 val bytes = getNV21FromImage(result.image)

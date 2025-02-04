@@ -195,6 +195,10 @@ Java_com_example_myapplication_JNILoader_yuv2jpeg(JNIEnv *env, jobject thiz, jby
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_example_myapplication_JNILoader_processHardwareBuffer(JNIEnv *env, jclass clazz, jobject buffer) {
+    EglHelper eglHelper = *new EglHelper();
+    eglHelper.initEgl();
+    eglHelper.makeCurrent();
+
     AHardwareBuffer *hardwareBuffer = AHardwareBuffer_fromHardwareBuffer(env, buffer);
     AHardwareBuffer_Desc desc;
     AHardwareBuffer_describe(hardwareBuffer, &desc);
@@ -202,6 +206,38 @@ Java_com_example_myapplication_JNILoader_processHardwareBuffer(JNIEnv *env, jcla
     EGLDisplay disp = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     EGLint eglImageAttributes[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE};
     EGLImageKHR imageEGL = eglCreateImageKHR(disp, EGL_NO_CONTEXT, EGL_NATIVE_BUFFER_ANDROID, clientBuf, eglImageAttributes);
-    glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, imageEGL);
+    ALOGD("processHardwareBuffer : width height %d %d\n", desc.width, desc.height);
+
+    unsigned int fbo;
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    //https://learnopengl-cn.readthedocs.io/zh/latest/04%20Advanced%20OpenGL/05%20Framebuffers/
+    unsigned int textureId;
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    //glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, imageEGL);
+    glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, imageEGL);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+//    GrayRender grayRender = *new GrayRender();
+//    grayRender.onSurfaceCreated();
+//    grayRender.onSurfaceChanged(desc.width, desc.height);
+//    grayRender.onDrawFrame(textureId);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glFinish();
+
+    eglHelper.breakCurrent();
+
     return 0;
 }

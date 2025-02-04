@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.graphics.Bitmap
+import android.hardware.HardwareBuffer
 
 class JNILoader {
     companion object {
@@ -12,4 +13,6 @@ class JNILoader {
     external fun stringFromJNI(copy : Bitmap): String
 
     external fun yuv2jpeg(byteArray: ByteArray, height: Int, width: Int, yuvSize: Int, quality: Int): ByteArray
+
+    external fun processHardwareBuffer(hardwareBuffer: HardwareBuffer?): Int
 }
