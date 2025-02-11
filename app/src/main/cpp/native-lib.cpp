@@ -7,6 +7,7 @@
 
 #include "GrayRender.h"
 #include "SplitRender.h"
+#include "YUVRender.h"
 
 #include <android/bitmap.h>
 
@@ -216,23 +217,22 @@ Java_com_example_myapplication_JNILoader_processHardwareBuffer(JNIEnv *env, jcla
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId);
     //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    //glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, imageEGL);
-    glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, imageEGL);
-    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
+    glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, imageEGL);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_EXTERNAL_OES, textureId, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, 0);
 
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-//    GrayRender grayRender = *new GrayRender();
-//    grayRender.onSurfaceCreated();
-//    grayRender.onSurfaceChanged(desc.width, desc.height);
-//    grayRender.onDrawFrame(textureId);
+//    YUVRender yuvRender = *new YUVRender();
+//    yuvRender.onSurfaceCreated();
+//    yuvRender.onSurfaceChanged(desc.width, desc.height);
+//    yuvRender.onDrawFrame(textureId);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glFinish();

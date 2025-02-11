@@ -22,7 +22,7 @@ void YUVRender::onSurfaceChanged(int width, int height) {
 void YUVRender::onDrawFrame(int textureId) {
     glUseProgram(program);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureId);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
     glUniform1i(glGetUniformLocation(program, "sTexture"), 0);
     glUniformMatrix4fv(glGetUniformLocation(program, "uMVPMatrix"), 1, GL_FALSE, IDENTITY_MATRIX);
     glUniformMatrix4fv(glGetUniformLocation(program, "uSTMatrix"), 1, GL_FALSE, IDENTITY_MATRIX);
