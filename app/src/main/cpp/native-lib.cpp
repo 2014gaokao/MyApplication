@@ -215,7 +215,7 @@ Java_com_example_myapplication_JNILoader_processHardwareBuffer(JNIEnv *env, jcla
     //https://learnopengl-cn.readthedocs.io/zh/latest/04%20Advanced%20OpenGL/05%20Framebuffers/
     unsigned int textureId;
     glGenTextures(1, &textureId);
-    glBindTexture(GL_TEXTURE_2D, textureId);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
     //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
 //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -227,12 +227,11 @@ Java_com_example_myapplication_JNILoader_processHardwareBuffer(JNIEnv *env, jcla
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_EXTERNAL_OES, 0);
 
-
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-//    YUVRender yuvRender = *new YUVRender();
-//    yuvRender.onSurfaceCreated();
-//    yuvRender.onSurfaceChanged(desc.width, desc.height);
-//    yuvRender.onDrawFrame(textureId);
+    YUVRender yuvRender = *new YUVRender();
+    yuvRender.onSurfaceCreated();
+    yuvRender.onSurfaceChanged(desc.width, desc.height);
+    yuvRender.onDrawFrame(textureId);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glFinish();
