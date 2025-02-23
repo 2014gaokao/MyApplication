@@ -106,3 +106,48 @@ dependencies {
 }
 
 //https://www.yuque.com/tongsr/xy0i84/eg0heg
+//https://juejin.cn/post/7371028010067771429#heading-17
+tasks.register("abandon") {
+    enabled = true
+    dependsOn("abort")
+    doFirst {
+        println("abandon doFirst")
+    }
+    doLast {
+        println("abandon doLast")
+    }
+}
+
+tasks.register("abort") {
+    onlyIf {
+        !providers.gradleProperty("flag").isPresent
+    }
+    doFirst {
+        println("abort doFirst")
+    }
+    doLast {
+        println("abort doLast")
+    }
+}
+
+tasks.register("writeFileTask", WriteFileTask::class) {
+    text = "why shall we need to work?"
+    outputFile = File(projectDir, "myFile.txt")
+}
+
+open class WriteFileTask : DefaultTask() {
+    //任务输入参数
+    @Input
+    var text = ""
+
+    //任务输出文件
+    @OutputFile
+    var outputFile: File? = null
+
+    //任务运行时调用的方法
+    @TaskAction
+    fun writeText() {
+        outputFile?.createNewFile()
+        outputFile?.writeText(text)
+    }
+}
