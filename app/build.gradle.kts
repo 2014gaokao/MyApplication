@@ -1,3 +1,4 @@
+import com.example.buildSrc.Dependencies
 import com.example.buildSrc.WriteFileTask
 
 plugins {
@@ -92,7 +93,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation("com.github.bumptech.glide:glide:4.11.0")
-    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation(Dependencies.okhttp)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.legacy.support.v4)
