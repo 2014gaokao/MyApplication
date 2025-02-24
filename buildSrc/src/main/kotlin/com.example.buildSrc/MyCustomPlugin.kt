@@ -5,9 +5,14 @@ import org.gradle.api.Project
 
 class MyCustomPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        project.tasks.register("myTask") {
+        project.tasks.register("abandon") {
+            enabled = true
+            dependsOn("abort")
+            doFirst {
+                println("abandon doFirst")
+            }
             doLast {
-                println("Hello from MyCustomPlugin!")
+                println("abandon doLast")
             }
         }
     }
