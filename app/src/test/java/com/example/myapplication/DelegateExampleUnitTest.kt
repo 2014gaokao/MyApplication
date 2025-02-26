@@ -9,6 +9,7 @@ class DelegateExampleUnitTest {
 
     @Test
     fun example1() {
+        //接口委托
         val base = BaseImpl();
         val derived = Derived(base);
         derived.printMessage()
@@ -28,6 +29,7 @@ class DelegateExampleUnitTest {
 
     @Test
     fun example2() {
+        //属性委托
         A().apply {
             aTest = "123"
             println(aTest)
@@ -50,16 +52,19 @@ class DelegateExampleUnitTest {
 
     @Test
     fun example3() {
+        //懒加载委托 lazy
         val test by lazy {
             println("初始化")
             true //这他妈的是返回值
         }
         println(test)
         println(test)
+        //初始化 true true
     }
 
     @Test
     fun example4() {
+        //观察委托 observable
         var aTest by Delegates.observable("hello") { _, oldValue, newValue ->
             println("${oldValue} ${newValue}")
         }

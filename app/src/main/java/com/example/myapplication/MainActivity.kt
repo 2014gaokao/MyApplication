@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.fragmentContainer.systemUiVisibility = FLAGS_FULLSCREEN
         }, IMMERSIVE_FLAG_TIMEOUT)
 
-        DelegateExample().testFunction()
         HttpExample().testFunction()
     }
 }
