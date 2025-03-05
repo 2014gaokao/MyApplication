@@ -40,5 +40,6 @@ class MainActivity : AppCompatActivity() {
         }, IMMERSIVE_FLAG_TIMEOUT)
 
         HttpExample().testFunction()
+        CoroutineExample().testFunction()
     }
 }
