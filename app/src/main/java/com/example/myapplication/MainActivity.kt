@@ -4,7 +4,17 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.myapplication.databinding.ActivityMainBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,7 +54,78 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun testCoroutineFunction() {
+//        val context = newFixedThreadPoolContext(20, "MyThread")
+//        //var context = newSingleThreadContext("MyThread")
+//        context.close()
+//        val scope = CoroutineScope(Dispatchers.Default)
+//        scope.launch {
+//            println("Coroutine thread11: ${Thread.currentThread().name}")
+//        }
 
+        //won't block thread
+//        println("Coroutine thread before: ${Thread.currentThread().name}")
+//        lifecycleScope.launch {
+//            println("Coroutine thread: ${Thread.currentThread().name}")
+//            val data = getData()
+//            val processedData = processData(data)
+//            println("Coroutine thread: ${Thread.currentThread().name} + $processedData")
+//        }
+//        println("Coroutine thread after: ${Thread.currentThread().name}")
+        /*
+        2025-03-06 00:11:24.562 18263-18263 System.out              com.example.myapplication            I  Coroutine thread before: main
+        2025-03-06 00:11:24.562 18263-18263 System.out              com.example.myapplication            I  Coroutine thread: main
+        2025-03-06 00:11:24.563 18263-18263 System.out              com.example.myapplication            I  Coroutine thread after: main
+        2025-03-06 00:11:26.564 18263-18301 System.out              com.example.myapplication            I  withContext Coroutine thread: DefaultDispatcher-worker-1
+        2025-03-06 00:11:28.568 18263-18301 System.out              com.example.myapplication            I  withContext Coroutine thread: DefaultDispatcher-worker-1 + network
+        2025-03-06 00:11:28.572 18263-18263 System.out              com.example.myapplication            I  Coroutine thread: main + processedData
+         */
+
+
+//        lifecycleScope.launch {
+//            coroutineScope {
+//                println("Coroutine thread: ${Thread.currentThread().name}")
+//                val deferred1 = async {
+//                    getData()
+//                }
+//                val deferred2 = async {
+//                    getData()
+//                }
+//                val con1 = deferred1.await()
+//                val con2 = deferred2.await()
+//                println("await Coroutine thread: $con1 + $con2")
+//            }
+//        }
+        /*
+        2025-03-06 00:13:29.014 18707-18707 System.out              com.example.myapplication            I  Coroutine thread: main
+        2025-03-06 00:13:31.016 18707-18752 System.out              com.example.myapplication            I  withContext Coroutine thread: DefaultDispatcher-worker-2
+        2025-03-06 00:13:31.017 18707-18751 System.out              com.example.myapplication            I  withContext Coroutine thread: DefaultDispatcher-worker-1
+        2025-03-06 00:13:31.020 18707-18707 System.out              com.example.myapplication            I  await Coroutine thread: network + network
+         */
+
+
+//        println("Coroutine thread before: ${Thread.currentThread().name}")
+//        runBlocking {
+//            getData()
+//        }
+//        println("Coroutine thread after: ${Thread.currentThread().name}")
+        /*
+        2025-03-06 00:15:50.748 19002-19002 System.out              com.example.myapplication            I  Coroutine thread before: main
+        2025-03-06 00:15:52.752 19002-19054 System.out              com.example.myapplication            I  withContext Coroutine thread: DefaultDispatcher-worker-1
+        2025-03-06 00:15:52.755 19002-19002 System.out              com.example.myapplication            I  Coroutine thread after: main
+         */
+
+    }
+
+    private suspend fun getData() = withContext(Dispatchers.IO) {
+        Thread.sleep(2000)
+        println("withContext Coroutine thread: ${Thread.currentThread().name}")
+        "network"
+    }
+
+    private suspend fun processData(network: String) = withContext(Dispatchers.Default) {
+        Thread.sleep(2000)
+        println("withContext Coroutine thread: ${Thread.currentThread().name} + $network")
+        "processedData"
     }
 
 }
