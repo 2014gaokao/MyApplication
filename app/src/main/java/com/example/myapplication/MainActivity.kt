@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.newSingleThreadContext
@@ -113,6 +114,22 @@ class MainActivity : AppCompatActivity() {
         2025-03-06 00:15:52.752 19002-19054 System.out              com.example.myapplication            I  withContext Coroutine thread: DefaultDispatcher-worker-1
         2025-03-06 00:15:52.755 19002-19002 System.out              com.example.myapplication            I  Coroutine thread after: main
          */
+
+
+        lifecycleScope.launch {
+            val initJob = launch {
+                getData()
+            }
+            println("Coroutine thread before: ${Thread.currentThread().name}")
+            initJob.join()
+            println("Coroutine thread after: ${Thread.currentThread().name}")
+            //do something before wait initJob, without care about result
+        }
+        /*
+        2025-03-06 00:25:21.959 20715-20715 System.out              com.example.myapplication            I  Coroutine thread before: main
+        2025-03-06 00:25:23.965 20715-20745 System.out              com.example.myapplication            I  withContext Coroutine thread: DefaultDispatcher-worker-1
+        2025-03-06 00:25:23.974 20715-20715 System.out              com.example.myapplication            I  Coroutine thread after: main
+        */
 
     }
 
