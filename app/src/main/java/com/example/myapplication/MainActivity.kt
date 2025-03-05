@@ -40,6 +40,11 @@ class MainActivity : AppCompatActivity() {
         }, IMMERSIVE_FLAG_TIMEOUT)
 
         HttpExample().testFunction()
-        CoroutineExample().testFunction()
+        testCoroutineFunction()
     }
+
+    private fun testCoroutineFunction() {
+
+    }
+
 }
