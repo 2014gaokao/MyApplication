@@ -116,15 +116,15 @@ class MainActivity : AppCompatActivity() {
          */
 
 
-        lifecycleScope.launch {
-            val initJob = launch {
-                getData()
-            }
-            println("Coroutine thread before: ${Thread.currentThread().name}")
-            initJob.join()
-            println("Coroutine thread after: ${Thread.currentThread().name}")
-            //do something before wait initJob, without care about result
-        }
+        //do something before wait initJob, without care about result
+//        lifecycleScope.launch {
+//            val initJob = launch {
+//                getData()
+//            }
+//            println("Coroutine thread before: ${Thread.currentThread().name}")
+//            initJob.join()
+//            println("Coroutine thread after: ${Thread.currentThread().name}")
+//        }
         /*
         2025-03-06 00:25:21.959 20715-20715 System.out              com.example.myapplication            I  Coroutine thread before: main
         2025-03-06 00:25:23.965 20715-20745 System.out              com.example.myapplication            I  withContext Coroutine thread: DefaultDispatcher-worker-1
