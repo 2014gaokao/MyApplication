@@ -16,6 +16,7 @@ import android.media.Image
 import android.media.ImageReader
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
@@ -359,12 +360,12 @@ class CameraFragment : Fragment() {
                 var res : ByteArray = JNILoader().yuv2jpeg(bytes, height, width, width * height / 2 * 3, 96)
 
                 try {
-                    val output = createFile(requireContext(), "jpg")
+                    val output = createDCIMFile(requireContext(), "jpg")
 
                     MediaStoreUtils().saveImageToMedia(requireContext(), res, output.absolutePath)
 
 //                    FileOutputStream(output).use { it.write(bytes) }
-//                    cont.resume(output)
+                    cont.resume(output)
                 } catch (exc: IOException) {
                     Log.e(TAG, "Unable to write JPEG image to file", exc)
                     cont.resumeWithException(exc)
@@ -421,6 +422,11 @@ class CameraFragment : Fragment() {
             val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
             Log.d("zcc", context.filesDir.toString())
             return File(context.filesDir, "IMG_${sdf.format(Date())}.$extension")
+        }
+
+        private fun createDCIMFile(context: Context, extension: String): File {
+            val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
+            return File(Environment.getExternalStorageDirectory().toString() + "/DCIM", "IMG_${sdf.format(Date())}.$extension")
         }
     }
 

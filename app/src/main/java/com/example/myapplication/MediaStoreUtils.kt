@@ -9,7 +9,7 @@ class MediaStoreUtils {
 
     fun saveImageToMedia(context : Context, bytes : ByteArray, path : String) {
         val values = ContentValues()
-        //values.put(MediaStore.Images.Media.DATA, path)
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, path.substring(path.lastIndexOf("/") + 1))
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
         values.put(MediaStore.Images.ImageColumns.DATE_TAKEN, System.currentTimeMillis())
         values.put(MediaStore.Images.ImageColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM);//在Pictures目录下创建自己的子目录，并向其中写入图片文件
