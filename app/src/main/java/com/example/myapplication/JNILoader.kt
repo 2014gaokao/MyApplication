@@ -15,4 +15,6 @@ class JNILoader {
     external fun yuv2jpeg(byteArray: ByteArray, height: Int, width: Int, yuvSize: Int, quality: Int): ByteArray
 
     external fun processHardwareBuffer(hardwareBuffer: HardwareBuffer?): Int
+
+    external fun createBitmapTexture(copy : Bitmap): Int
 }

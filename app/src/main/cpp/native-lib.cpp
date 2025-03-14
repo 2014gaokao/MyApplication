@@ -240,3 +240,33 @@ Java_com_example_myapplication_JNILoader_processHardwareBuffer(JNIEnv *env, jcla
 
     return 0;
 }
+
+extern "C" JNIEXPORT jint JNICALL
+Java_com_example_myapplication_JNILoader_createBitmapTexture(JNIEnv* env, jclass clazz, jobject bitmap) {
+    EglHelper eglHelper = *new EglHelper();
+    eglHelper.initEgl();
+    eglHelper.makeCurrent();
+
+    unsigned char *pixels;
+    AndroidBitmap_lockPixels(env, bitmap, reinterpret_cast<void **>(&pixels));
+
+    AndroidBitmapInfo info;
+    AndroidBitmap_getInfo(env, bitmap, &info);
+
+    GLuint textureId;
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, info.width, info.height, 0, GL_RGBA,GL_UNSIGNED_BYTE, pixels);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    ALOGD("setBitmap : width height %d %d %d %d\n", textureId, info.width, info.height, info.flags);
+
+    AndroidBitmap_unlockPixels(env, bitmap);
+
+    eglHelper.breakCurrent();
+
+    return 0;
+}

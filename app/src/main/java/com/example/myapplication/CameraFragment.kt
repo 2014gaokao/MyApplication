@@ -2,7 +2,11 @@ package com.example.myapplication
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.ImageFormat
+import android.graphics.Paint
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraDevice
@@ -351,8 +355,16 @@ class CameraFragment : Fragment() {
 
             ImageFormat.YUV_420_888 -> {
                 JNILoader().processHardwareBuffer(result.image.hardwareBuffer)
-                val buffer = result.image.planes[0].buffer
-                //val bytes = ByteArray(buffer.remaining()).apply { buffer.get(this) }
+
+                val bitmap = Bitmap.createBitmap(472, 472, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bitmap)
+                val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+                paint.color = Color.WHITE
+                paint.strokeWidth = 16f
+                paint.textSize = 100f
+                canvas.drawText("FUCK", 100f, 280f, paint)
+                JNILoader().createBitmapTexture(bitmap)
+
                 val bytes = getNV21FromImage(result.image)
 
                 var width = result.image.width
