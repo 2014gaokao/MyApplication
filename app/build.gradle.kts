@@ -1,5 +1,4 @@
 import com.example.buildSrc.Dependencies
-import com.example.buildSrc.WriteFileTask
 
 plugins {
     alias(libs.plugins.android.application)
@@ -105,25 +104,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-}
-
-//https://www.yuque.com/tongsr/xy0i84/eg0heg
-//https://juejin.cn/post/7371028010067771429#heading-17
-
-//https://juejin.cn/column/7123935861976072199  Gradle基础到进阶
-tasks.register("abort") {
-    onlyIf {
-        !providers.gradleProperty("flag").isPresent
-    }
-    doFirst {
-        println("abort doFirst")
-    }
-    doLast {
-        println("abort doLast")
-    }
-}
-
-tasks.register("writeFileTask", WriteFileTask::class) {
-    text = "why shall we need to work?"
-    outputFile = File(projectDir, "myFile.txt")
 }
