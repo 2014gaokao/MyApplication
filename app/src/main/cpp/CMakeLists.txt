@@ -12,7 +12,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src/main/cpp/include)
 add_library(turbojpeg STATIC IMPORTED)
 set_target_properties(turbojpeg PROPERTIES IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/../../../libs/${ANDROID_ABI}/libturbojpeg.a")
 
-add_library(native-lib SHARED native-lib.cpp EglHelper.cpp GrayRender.cpp SplitRender.cpp YUVRender.cpp)
+add_library(native-lib SHARED native-lib.cpp EglHelper.cpp GrayRender.cpp SplitRender.cpp YUVRender.cpp YUVPasteRender.cpp)
 
 find_library(lib_log log)
 
