@@ -18,16 +18,17 @@ private:
 "#extension GL_OES_EGL_image_external_essl3 : require\n" \
 "#extension GL_EXT_YUV_target : require\n"               \
 "in vec2 v_texCoord;\n"         \
-"uniform highp __samplerExternal2DY2YEXT sTexture;\n"                    \
+"uniform highp __samplerExternal2DY2YEXT sTexture;\n"    \
+"uniform sampler2D pTexture;"                        \
 "layout (yuv) out vec4 outColor;\n"                      \
                             \
 "void main()\n" \
 "{\n" \
 "	vec4 color = texture(sTexture, v_texCoord);\n"         \
-"   vec3 rgb = yuv_2_rgb(color.xyz,itu_601_full_range);\n"               \
-"   float weightMean = rgb.r * 0.3 + rgb.g * 0.59 + rgb.b * 0.11;\n" \
-"   rgb.r = rgb.g = rgb.b = weightMean;\n"                            \
-"   vec4 ret = vec4(clamp(rgb,0.0,1.0),1.0);\n"                    \
+"   vec3 o_rgb = yuv_2_rgb(color.xyz,itu_601_full_range);\n"               \
+"   vec4 p_rgb = texture(pTexture, v_texCoord);\n" \
+"   o_rgb.rgb = p_rgb.rgb + o_rgb.rgb * (1.0 - p_rgb.a);\n"                            \
+"   vec4 ret = vec4(clamp(o_rgb,0.0,1.0),1.0);\n"                    \
 "   vec3 yuv = rgb_2_yuv(ret.xyz,itu_601_full_range).xyz;\n" \
 "   outColor = vec4(yuv,1.0);\n"                    \
 "}\n"
