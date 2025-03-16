@@ -6,7 +6,7 @@ public:
     ~YUVPasteRender();
     void onSurfaceCreated();
     void onSurfaceChanged(int width, int height);
-    void onDrawFrame(int textureId);
+    void onDrawFrame(int textureId, int pasteTextureId);
 
 private:
     int program;

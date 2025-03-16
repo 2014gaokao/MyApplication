@@ -8,6 +8,7 @@
 #include "GrayRender.h"
 #include "SplitRender.h"
 #include "YUVRender.h"
+#include "YUVPasteRender.h"
 
 #include <android/bitmap.h>
 
@@ -242,7 +243,7 @@ Java_com_example_myapplication_JNILoader_processHardwareBuffer(JNIEnv *env, jcla
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_example_myapplication_JNILoader_createBitmapTexture(JNIEnv* env, jclass clazz, jobject bitmap) {
+Java_com_example_myapplication_JNILoader_processPasteHardwareBuffer(JNIEnv* env, jclass clazz, jobject bitmap, jobject buffer) {
     EglHelper eglHelper = *new EglHelper();
     eglHelper.initEgl();
     eglHelper.makeCurrent();
@@ -265,6 +266,36 @@ Java_com_example_myapplication_JNILoader_createBitmapTexture(JNIEnv* env, jclass
     ALOGD("setBitmap : width height %d %d %d %d\n", pasteTextureId, info.width, info.height, info.flags);
 
     AndroidBitmap_unlockPixels(env, bitmap);
+
+
+    AHardwareBuffer *hardwareBuffer = AHardwareBuffer_fromHardwareBuffer(env, buffer);
+    AHardwareBuffer_Desc desc;
+    AHardwareBuffer_describe(hardwareBuffer, &desc);
+    EGLClientBuffer clientBuf = eglGetNativeClientBufferANDROID(hardwareBuffer);
+    EGLDisplay disp = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    EGLint eglImageAttributes[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE};
+    EGLImageKHR imageEGL = eglCreateImageKHR(disp, EGL_NO_CONTEXT, EGL_NATIVE_BUFFER_ANDROID, clientBuf, eglImageAttributes);
+    ALOGD("processHardwareBuffer : width height %d %d\n", desc.width, desc.height);
+
+    unsigned int fbo;
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    unsigned int textureId;
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
+    glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, imageEGL);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_EXTERNAL_OES, textureId, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    YUVPasteRender yuvPasteRender = *new YUVPasteRender();
+    yuvPasteRender.onSurfaceCreated();
+    yuvPasteRender.onSurfaceChanged(desc.width, desc.height);
+    yuvPasteRender.onDrawFrame(textureId, pasteTextureId);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glFinish();
 
     eglHelper.breakCurrent();
 
