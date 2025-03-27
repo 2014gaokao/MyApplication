@@ -30,6 +30,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".server.MyAidlService"
+            android:process=":remote">
+        </service>
     </application>
 
 </manifest>

@@ -1,11 +1,17 @@
 package com.example.myapplication
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.myapplication.databinding.ActivityMainBinding
+import com.example.myapplication.server.MyAidlService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -35,11 +41,27 @@ class MainActivity : AppCompatActivity() {
         private const val IMMERSIVE_FLAG_TIMEOUT = 500L
     }
 
+    private val mConnection = object : ServiceConnection {
+        override fun onServiceConnected(p0: ComponentName?, p1: IBinder?) {
+            //TODO("Not yet implemented")
+            val aidlInterface = IMyAidlInterface.Stub.asInterface(p1)
+            println("aidl : ${aidlInterface.myParcelable.getId()}")
+        }
+
+        override fun onServiceDisconnected(p0: ComponentName?) {
+            //TODO("Not yet implemented")
+        }
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
+
+        val intent = Intent(this, MyAidlService::class.java)
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE)
     }
 
     override fun onResume() {
