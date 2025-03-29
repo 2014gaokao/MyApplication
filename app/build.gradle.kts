@@ -93,6 +93,8 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation("com.github.bumptech.glide:glide:4.11.0")
+    implementation("io.reactivex.rxjava3:rxjava:2.5.0")
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.0")
     implementation(Dependencies.okhttp)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.viewpager2)
