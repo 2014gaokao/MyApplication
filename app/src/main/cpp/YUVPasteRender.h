@@ -26,7 +26,16 @@ private:
 "{\n" \
 "	vec4 color = texture(sTexture, v_texCoord);\n"         \
 "   vec3 o_rgb = yuv_2_rgb(color.xyz,itu_601_full_range);\n"               \
-"   vec4 p_rgb = texture(pTexture, v_texCoord);\n" \
+                        \
+"   vec2 mid = vec2(0.5, 0.5);"                        \
+"   mat2 matrix = mat2(cos(radians(270.0)), -sin(radians(270.0)),"    \
+"                      sin(radians(270.0)), cos(radians(270.0)));"                        \
+"   vec2 p_texCoord = v_texCoord;"                        \
+"   p_texCoord -= mid;"                        \
+"   p_texCoord = matrix * p_texCoord;"                        \
+"   p_texCoord += vec2(0.5, 0.5);"                        \
+                        \
+"   vec4 p_rgb = texture(pTexture, p_texCoord);\n" \
 "   o_rgb.rgb = p_rgb.rgb + o_rgb.rgb * (1.0 - p_rgb.a);\n"                            \
 "   vec4 ret = vec4(clamp(o_rgb,0.0,1.0),1.0);\n"                    \
 "   vec3 yuv = rgb_2_yuv(ret.xyz,itu_601_full_range).xyz;\n" \
