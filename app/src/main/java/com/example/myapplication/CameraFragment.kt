@@ -458,7 +458,7 @@ class CameraFragment : Fragment() {
         val yRowStride = image.planes[0].rowStride
         val uvRowStride = image.planes[1].rowStride
         val uvPixelsStride = image.planes[1].pixelStride
-        Log.d(TAG, "yRowStride: $yRowStride; vuRowStride: $uvRowStride; vuPixelsStride: $uvPixelsStride; width: $width; height: $height")
+        Log.d(TAG, "yRowStride: $yRowStride; uvRowStride: $uvRowStride; uvPixelsStride: $uvPixelsStride; width: $width; height: $height")
 
         val yuvBytes = ByteArray(width * height * ImageFormat.getBitsPerPixel(ImageFormat.YUV_420_888) / 8)
 
@@ -468,13 +468,18 @@ class CameraFragment : Fragment() {
             //两者相等，说明每个YUV块紧密相连，可以直接拷贝
             System.arraycopy(yBytes, 0, yuvBytes, 0, width * height)
 
+            var dstIndex = width * height
+            var srcIndex = 0
             val uvSize = (width * height) shr 2
             if (uvPixelsStride == 2) {
-                for (i in 0 until uvSize) {
-                    yuvBytes[width * height + i] = uBytes[i * uvPixelsStride]
-                    yuvBytes[width * height + uvSize + i] = vBytes[i * uvPixelsStride]
+                for (i in 0 until  height / 2) {
+                    for (j in 0 until width / 2) {
+                        yuvBytes[dstIndex] = uBytes[srcIndex]
+                        yuvBytes[uvSize + dstIndex] = vBytes[srcIndex]
+                        srcIndex += uvPixelsStride
+                        dstIndex++
+                    }
                 }
-                return yuvBytes
             }
         }
         return yuvBytes
