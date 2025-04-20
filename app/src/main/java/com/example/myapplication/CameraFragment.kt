@@ -481,6 +481,27 @@ class CameraFragment : Fragment() {
                     }
                 }
             }
+        } else {
+            var srcIndex = 0
+            var dstIndex = 0
+            for (i in 0 until height) {
+                System.arraycopy(yBytes, srcIndex, yuvBytes, dstIndex, width)
+                srcIndex += yRowStride
+                dstIndex += width
+            }
+
+            srcIndex = 0
+            val uvSize = (width * height) shr 2
+            if (uvPixelsStride == 2) {
+                for (i in 0 until  height / 2) {
+                    for (j in 0 until width / 2) {
+                        yuvBytes[dstIndex] = uBytes[srcIndex]
+                        yuvBytes[uvSize + dstIndex] = vBytes[srcIndex]
+                        srcIndex += uvPixelsStride
+                        dstIndex++
+                    }
+                }
+            }
         }
         return yuvBytes
     }
