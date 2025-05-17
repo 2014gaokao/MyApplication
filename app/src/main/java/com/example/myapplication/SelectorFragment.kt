@@ -7,7 +7,6 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CameraMetadata
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,7 +45,7 @@ class SelectorFragment : Fragment() {
                     }
                     if (item.title == "bitmap opengl hardware buffer") {
                         Navigation.findNavController(requireActivity(), R.id.fragment_container)
-                            .navigate(R.id.action_selector_fragment_to_openGLFragment, bundle)
+                            .navigate(R.id.action_selector_fragment_to_CaiXuKunFragment, bundle)
                     } else if (item.title == "gles learning") {
                         Navigation.findNavController(requireActivity(), R.id.fragment_container)
                             .navigate(R.id.action_selector_fragment_to_GLESFragment, bundle)

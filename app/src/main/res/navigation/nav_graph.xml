@@ -28,8 +28,8 @@
             app:destination="@+id/camera_fragment"
             app:launchSingleTop="true" />
         <action
-            android:id="@+id/action_selector_fragment_to_openGLFragment"
-            app:destination="@id/openGLFragment" />
+            android:id="@+id/action_selector_fragment_to_CaiXuKunFragment"
+            app:destination="@id/CaiXuKunFragment" />
         <action
             android:id="@+id/action_selector_fragment_to_GLESFragment"
             app:destination="@id/GLESFragment" />
@@ -65,10 +65,10 @@
 
     </fragment>
     <fragment
-        android:id="@+id/openGLFragment"
-        android:name="com.example.myapplication.OpenGLFragment"
-        android:label="fragment_opengl"
-        tools:layout="@layout/fragment_opengl" />
+        android:id="@+id/CaiXuKunFragment"
+        android:name="com.example.myapplication.CaiXuKunFragment"
+        android:label="fragment_caixukun"
+        tools:layout="@layout/fragment_caixukun" />
     <fragment
         android:id="@+id/GLESFragment"
         android:name="com.example.myapplication.GLESFragment"

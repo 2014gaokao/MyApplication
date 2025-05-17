@@ -10,20 +10,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.example.myapplication.databinding.FragmentOpenglBinding
+import com.example.myapplication.databinding.FragmentCaixukunBinding
 
-class OpenGLFragment : Fragment() {
+class CaiXuKunFragment : Fragment() {
 
     companion object {
-        fun newInstance() = OpenGLFragment()
+        fun newInstance() = CaiXuKunFragment()
     }
 
-    private var _fragmentOpenglBinding: FragmentOpenglBinding? = null
+    private var _fragmentOpenglBinding: FragmentCaixukunBinding? = null
 
     private val fragmentOpenglBinding get() = _fragmentOpenglBinding!!
 
-    private val viewModel: OpenGLViewModel by viewModels()
+    private val viewModel: CaiXuKunViewModel by viewModels()
     //private lateinit var viewModel: OpenGLViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +35,7 @@ class OpenGLFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _fragmentOpenglBinding = FragmentOpenglBinding.inflate(inflater, container, false)
+        _fragmentOpenglBinding = FragmentCaixukunBinding.inflate(inflater, container, false)
         return fragmentOpenglBinding.root
         //return inflater.inflate(R.layout.fragment_opengl, container, false)
     }

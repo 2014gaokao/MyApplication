@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class OpenGLViewModel : ViewModel() {
+class CaiXuKunViewModel : ViewModel() {
     // TODO: Implement the ViewModel
     // 使用 MutableLiveData 来保存数据
     private var _user = MutableLiveData<User>()
