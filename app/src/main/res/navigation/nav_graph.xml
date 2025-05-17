@@ -31,8 +31,8 @@
             android:id="@+id/action_selector_fragment_to_CaiXuKunFragment"
             app:destination="@id/CaiXuKunFragment" />
         <action
-            android:id="@+id/action_selector_fragment_to_GLESFragment"
-            app:destination="@id/GLESFragment" />
+            android:id="@+id/action_selector_fragment_to_DualCameraFragment"
+            app:destination="@id/DualCameraFragment" />
 
     </fragment>
 
@@ -70,9 +70,9 @@
         android:label="fragment_caixukun"
         tools:layout="@layout/fragment_caixukun" />
     <fragment
-        android:id="@+id/GLESFragment"
-        android:name="com.example.myapplication.GLESFragment"
-        android:label="fragment_gles"
-        tools:layout="@layout/fragment_gles" />
+        android:id="@+id/DualCameraFragment"
+        android:name="com.example.myapplication.DualCameraFragment"
+        android:label="fragment_dualcamera"
+        tools:layout="@layout/fragment_dualcamera" />
 
 </navigation>
