@@ -347,14 +347,44 @@ Java_com_example_myapplication_JNILoader_processWatermarkHardwareBuffer(JNIEnv* 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    mWaterMarkCacheIn = (unsigned char *) malloc(info.width * info.height * 3);
+    mWaterMarkCacheOut = (unsigned char *) malloc(info.width * info.height * 3);
+
     ALOGD("setBitmap : width height %d %d %d %d\n", pasteTextureId, info.width, info.height, info.flags);
 
     AndroidBitmap_unlockPixels(env, bitmap);
 
+    //
+    FrameParam inFrameParams;
+    FrameParam outFrameParams;
 
     AHardwareBuffer *hardwareBuffer = AHardwareBuffer_fromHardwareBuffer(env, buffer);
     AHardwareBuffer_Desc desc;
     AHardwareBuffer_describe(hardwareBuffer, &desc);
+
+    AHardwareBuffer_Planes planes_info;
+    int result = AHardwareBuffer_lockPlanes(hardwareBuffer, AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN | AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN, -1, nullptr, &planes_info);
+    ALOGD("lock planes result: %d\n", result);
+    void *pU = planes_info.planes[1].data;
+    void *pV = planes_info.planes[2].data;
+    void *pUV = pU < pV ? pU : pV;
+
+    inFrameParams.plane0 = planes_info.planes[0].data;
+    inFrameParams.plane1 = pUV;
+    inFrameParams.width = desc.width;
+    inFrameParams.height = desc.height;
+    inFrameParams.row_stride_plane0 = desc.stride;
+    inFrameParams.row_stride_plane1 = desc.stride;
+
+    outFrameParams.plane0 = planes_info.planes[0].data;
+    outFrameParams.plane1 = pUV;
+    outFrameParams.width = desc.width;
+    outFrameParams.height = desc.height;
+    outFrameParams.row_stride_plane0 = desc.stride;
+    outFrameParams.row_stride_plane1 = desc.stride;
+    //
+
     EGLClientBuffer clientBuf = eglGetNativeClientBufferANDROID(hardwareBuffer);
     EGLDisplay disp = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     EGLint eglImageAttributes[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE};
