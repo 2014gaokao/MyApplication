@@ -389,7 +389,7 @@ Java_com_example_myapplication_JNILoader_processWatermarkHardwareBuffer(JNIEnv* 
     EGLDisplay disp = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     EGLint eglImageAttributes[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE};
     EGLImageKHR imageEGL = eglCreateImageKHR(disp, EGL_NO_CONTEXT, EGL_NATIVE_BUFFER_ANDROID, clientBuf, eglImageAttributes);
-    ALOGD("processHardwareBuffer : width height %d %d\n", desc.width, desc.height);
+    ALOGD("processHardwareBuffer : width height stride %d %d %d\n", desc.width, desc.height, desc.stride);
 
     unsigned int fbo;
     glGenFramebuffers(1, &fbo);
