@@ -363,7 +363,8 @@ class CameraFragment : Fragment() {
                 paint.strokeWidth = 16f
                 paint.textSize = 100f
                 canvas.drawText("FUCK", 100f, 280f, paint)
-                JNILoader().processPasteHardwareBuffer(bitmap, result.image.hardwareBuffer)
+                //JNILoader().processPasteHardwareBuffer(bitmap, result.image.hardwareBuffer)
+                JNILoader().processWatermarkHardwareBuffer(bitmap, 100, 100, 100, 100, 0, result.image.hardwareBuffer)
 
                 val bytes = getNV21FromImage(result.image)
 

@@ -17,4 +17,6 @@ class JNILoader {
     external fun processHardwareBuffer(hardwareBuffer: HardwareBuffer?): Int
 
     external fun processPasteHardwareBuffer(copy : Bitmap, hardwareBuffer: HardwareBuffer?): Int
+
+    external fun processWatermarkHardwareBuffer(copy : Bitmap, width: Int, height: Int, x: Int, y: Int, ori: Int, hardwareBuffer: HardwareBuffer?): Int
 }

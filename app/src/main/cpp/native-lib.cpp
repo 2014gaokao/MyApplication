@@ -301,3 +301,87 @@ Java_com_example_myapplication_JNILoader_processPasteHardwareBuffer(JNIEnv* env,
 
     return 0;
 }
+
+typedef struct FrameParam
+{
+    void *plane0;
+    void *plane1;
+    int row_stride_plane0;
+    int row_stride_plane1;
+    int width;
+    int height;
+} FrameParam;
+
+typedef struct WaterMarkParam
+{
+    int width;
+    int height;
+    int x;
+    int y;
+    int orientation;
+} WaterMarkParam;
+
+unsigned char* mWaterMarkCacheIn;
+unsigned char* mWaterMarkCacheOut;
+
+extern "C" JNIEXPORT jint JNICALL
+Java_com_example_myapplication_JNILoader_processWatermarkHardwareBuffer(JNIEnv* env, jclass clazz, jobject bitmap, int width, int height, int x, int y, int orientation, jobject buffer) {
+    EglHelper eglHelper = *new EglHelper();
+    eglHelper.initEgl();
+    eglHelper.makeCurrent();
+
+    unsigned char *pixels;
+    AndroidBitmap_lockPixels(env, bitmap, reinterpret_cast<void **>(&pixels));
+
+    AndroidBitmapInfo info;
+    AndroidBitmap_getInfo(env, bitmap, &info);
+
+    ALOGD("setWatermark : width height x y %d %d %d %d\n", width, height, x, y);
+
+    GLuint pasteTextureId;
+    glGenTextures(1, &pasteTextureId);
+    glBindTexture(GL_TEXTURE_2D, pasteTextureId);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, info.width, info.height, 0, GL_RGBA,GL_UNSIGNED_BYTE, pixels);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    ALOGD("setBitmap : width height %d %d %d %d\n", pasteTextureId, info.width, info.height, info.flags);
+
+    AndroidBitmap_unlockPixels(env, bitmap);
+
+
+    AHardwareBuffer *hardwareBuffer = AHardwareBuffer_fromHardwareBuffer(env, buffer);
+    AHardwareBuffer_Desc desc;
+    AHardwareBuffer_describe(hardwareBuffer, &desc);
+    EGLClientBuffer clientBuf = eglGetNativeClientBufferANDROID(hardwareBuffer);
+    EGLDisplay disp = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    EGLint eglImageAttributes[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE};
+    EGLImageKHR imageEGL = eglCreateImageKHR(disp, EGL_NO_CONTEXT, EGL_NATIVE_BUFFER_ANDROID, clientBuf, eglImageAttributes);
+    ALOGD("processHardwareBuffer : width height %d %d\n", desc.width, desc.height);
+
+    unsigned int fbo;
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    unsigned int textureId;
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
+    glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, imageEGL);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_EXTERNAL_OES, textureId, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    YUVPasteRender yuvPasteRender = *new YUVPasteRender();
+    yuvPasteRender.onSurfaceCreated();
+    yuvPasteRender.onSurfaceChanged(desc.width, desc.height);
+    yuvPasteRender.onDrawFrame(textureId, pasteTextureId);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glFinish();
+
+    eglHelper.breakCurrent();
+
+    return 0;
+}
