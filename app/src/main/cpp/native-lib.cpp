@@ -385,6 +385,24 @@ Java_com_example_myapplication_JNILoader_processWatermarkHardwareBuffer(JNIEnv* 
     outFrameParams.row_stride_plane1 = desc.stride;
     //
 
+    unsigned char *src_y_ptr = (unsigned char *)inFrameParams.plane0 + y * inFrameParams.row_stride_plane0 + x;
+    unsigned char *dst_y_ptr = mWaterMarkCacheIn;
+
+    unsigned char *src_uv_ptr = (unsigned char *)inFrameParams.plane1 + y * inFrameParams.row_stride_plane1 / 2 + x;
+    unsigned char *dst_uv_ptr = (unsigned char *)mWaterMarkCacheIn + info.width * info.height;
+
+    for (int i = 0; i < info.height; i++) {
+        memcpy(dst_y_ptr, src_y_ptr, info.width);
+        src_y_ptr += inFrameParams.row_stride_plane0;
+        dst_y_ptr += info.width;
+    }
+
+    for (int i = 0; i < info.height / 2; i++) {
+        memcpy(dst_uv_ptr, src_uv_ptr, info.width);
+        src_uv_ptr += inFrameParams.row_stride_plane1;
+        dst_uv_ptr += info.width;
+    }
+
     EGLClientBuffer clientBuf = eglGetNativeClientBufferANDROID(hardwareBuffer);
     EGLDisplay disp = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     EGLint eglImageAttributes[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE};
