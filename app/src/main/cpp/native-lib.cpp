@@ -385,6 +385,7 @@ Java_com_example_myapplication_JNILoader_processWatermarkHardwareBuffer(JNIEnv* 
     outFrameParams.row_stride_plane1 = desc.stride;
     //
 
+    ALOGD("WaterMarkCache before %d %d %d %d\n", *mWaterMarkCacheIn, *(mWaterMarkCacheIn + 1), *(mWaterMarkCacheIn + 2), *(mWaterMarkCacheIn + 3));
     unsigned char *src_y_ptr = (unsigned char *)inFrameParams.plane0 + y * inFrameParams.row_stride_plane0 + x;
     unsigned char *dst_y_ptr = mWaterMarkCacheIn;
 
@@ -402,6 +403,7 @@ Java_com_example_myapplication_JNILoader_processWatermarkHardwareBuffer(JNIEnv* 
         src_uv_ptr += inFrameParams.row_stride_plane1;
         dst_uv_ptr += info.width;
     }
+    ALOGD("WaterMarkCache after %d %d %d %d\n", *mWaterMarkCacheIn, *(mWaterMarkCacheIn + 1), *(mWaterMarkCacheIn + 2), *(mWaterMarkCacheIn + 3));
 
     EGLClientBuffer clientBuf = eglGetNativeClientBufferANDROID(hardwareBuffer);
     EGLDisplay disp = eglGetDisplay(EGL_DEFAULT_DISPLAY);
