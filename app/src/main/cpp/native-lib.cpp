@@ -405,6 +405,27 @@ Java_com_example_myapplication_JNILoader_processWatermarkHardwareBuffer(JNIEnv* 
     }
     ALOGD("WaterMarkCache after %d %d %d %d\n", *mWaterMarkCacheIn, *(mWaterMarkCacheIn + 1), *(mWaterMarkCacheIn + 2), *(mWaterMarkCacheIn + 3));
 
+    //fill buffer to AHardwareBuffer
+    AHardwareBuffer_Desc usage;
+    usage.format = AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420;
+    usage.height = info.height;
+    usage.width = info.width;
+    usage.layers = 1;
+    usage.rfu0 = 0;
+    usage.rfu1 = 0;
+    usage.usage = AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN | AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE;
+
+    AHardwareBuffer *inBuffer = NULL;
+    int ret = AHardwareBuffer_allocate(&usage, &inBuffer);
+    AHardwareBuffer_Planes wm_planes_info;
+    ret = AHardwareBuffer_lockPlanes(inBuffer, AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN, -1, nullptr, &wm_planes_info);
+    AHardwareBuffer_Plane *planes = wm_planes_info.planes;
+    int stride_y = planes[0].rowStride;
+    int stride_uv = planes[1].rowStride;
+    int stride_uv2 = planes[2].rowStride;
+    ALOGD("rowStride : %d %d %d\n", stride_y, stride_uv, stride_uv2);
+    //fill buffer to AHardwareBuffer
+
     EGLClientBuffer clientBuf = eglGetNativeClientBufferANDROID(hardwareBuffer);
     EGLDisplay disp = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     EGLint eglImageAttributes[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE};
