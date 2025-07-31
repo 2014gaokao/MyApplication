@@ -358,6 +358,7 @@ Java_com_example_myapplication_JNILoader_processWatermarkHardwareBuffer(JNIEnv* 
     //
     FrameParam inFrameParams;
     FrameParam outFrameParams;
+    FrameParam watermarkParams;
 
     AHardwareBuffer *hardwareBuffer = AHardwareBuffer_fromHardwareBuffer(env, buffer);
     AHardwareBuffer_Desc desc;
@@ -405,7 +406,14 @@ Java_com_example_myapplication_JNILoader_processWatermarkHardwareBuffer(JNIEnv* 
     }
     ALOGD("WaterMarkCache after %d %d %d %d\n", *mWaterMarkCacheIn, *(mWaterMarkCacheIn + 1), *(mWaterMarkCacheIn + 2), *(mWaterMarkCacheIn + 3));
 
-    //fill buffer to AHardwareBuffer
+    watermarkParams.width = info.width;
+    watermarkParams.height = info.height;
+    watermarkParams.row_stride_plane0 = info.width * 1;
+    watermarkParams.row_stride_plane1 = info.width * 1;
+    watermarkParams.plane0 = mWaterMarkCacheIn;
+    watermarkParams.plane1 = mWaterMarkCacheIn + info.width * info.height * 1;
+
+    //fill watermark buffer to AHardwareBuffer
     AHardwareBuffer_Desc usage;
     usage.format = AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420;
     usage.height = info.height;
@@ -424,7 +432,15 @@ Java_com_example_myapplication_JNILoader_processWatermarkHardwareBuffer(JNIEnv* 
     int stride_uv = planes[1].rowStride;
     int stride_uv2 = planes[2].rowStride;
     ALOGD("rowStride : %d %d %d\n", stride_y, stride_uv, stride_uv2);
-    //fill buffer to AHardwareBuffer
+
+    for (int i = 0 ; i < height; i++) {
+        memcpy((char *)planes[0].data + i * stride_y, (char *)watermarkParams.plane0 + i * watermarkParams.width, stride_y < watermarkParams.width ? stride_y : watermarkParams.width);
+    }
+    void *uv = planes[1].data < planes[2].data ? planes[1].data : planes[2].data;
+    for (int i = 0 ; i < height / 2; i++) {
+        memcpy((char *)uv + i * stride_uv, (char *)watermarkParams.plane1 + i * watermarkParams.width, stride_uv < watermarkParams.width ? stride_uv : watermarkParams.width);
+    }
+    //fill watermark buffer to AHardwareBuffer
 
     EGLClientBuffer clientBuf = eglGetNativeClientBufferANDROID(hardwareBuffer);
     EGLDisplay disp = eglGetDisplay(EGL_DEFAULT_DISPLAY);
@@ -453,6 +469,24 @@ Java_com_example_myapplication_JNILoader_processWatermarkHardwareBuffer(JNIEnv* 
     glFinish();
 
     eglHelper.breakCurrent();
+//
+//    unsigned char *src_y_ptr1 = (unsigned char *)watermarkParams.plane0;
+//    unsigned char *dst_y_ptr1 = (unsigned char *)inFrameParams.plane0 + y * inFrameParams.row_stride_plane0 + x * 1;
+//
+//    unsigned char *src_uv_ptr1 = (unsigned char *)watermarkParams.plane1;
+//    unsigned char *dst_uv_ptr1 = (unsigned char *)inFrameParams.plane1 + y * inFrameParams.row_stride_plane1 / 2 + x * 1;
+//
+//    for (int i = 0; i < watermarkParams.height; i++) {
+//        memcpy(dst_y_ptr1, src_y_ptr1, watermarkParams.width * 1);
+//        src_y_ptr1 += watermarkParams.width * 1;
+//        dst_y_ptr1 += inFrameParams.row_stride_plane0;
+//    }
+//
+//    for (int i = 0; i < watermarkParams.height / 2; i++) {
+//        memcpy(dst_uv_ptr1, src_uv_ptr1, watermarkParams.width * 1);
+//        src_uv_ptr1 += watermarkParams.width * 1;
+//        dst_uv_ptr1 += inFrameParams.row_stride_plane1;
+//    }
 
     return 0;
 }
