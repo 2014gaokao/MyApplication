@@ -302,6 +302,22 @@ Java_com_example_myapplication_JNILoader_processPasteHardwareBuffer(JNIEnv* env,
     return 0;
 }
 
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_example_myapplication_JNILoader_processHardwareBuffer2(JNIEnv *env, jclass clazz, jobject buffer) {
+    AHardwareBuffer *hardwareBuffer = AHardwareBuffer_fromHardwareBuffer(env, buffer);
+    AHardwareBuffer_Desc desc;
+    AHardwareBuffer_describe(hardwareBuffer, &desc);
+
+    AHardwareBuffer_Planes planes_info;
+    int result = AHardwareBuffer_lockPlanes(hardwareBuffer, AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN | AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN, -1, nullptr, &planes_info);
+    ALOGD("test lock planes result: %d\n", result);
+    void *pU = planes_info.planes[1].data;
+    void *pV = planes_info.planes[2].data;
+    void *pUV = pU < pV ? pU : pV;
+    return 0;
+}
+
 typedef struct FrameParam
 {
     void *plane0;
